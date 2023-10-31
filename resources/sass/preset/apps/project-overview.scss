@@ -1,0 +1,19 @@
+@import '../mixins.scss';
+
+.project-overview{
+  &-current-situation{
+    padding: 30px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  &-target-situation{
+    padding: 30px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+}
+.timeline-custom-dense{
+  padding-bottom:15px !important;
+}
