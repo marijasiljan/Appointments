@@ -11,11 +11,6 @@ export default {
   setup() {
     const { appRouteTransition } = useAppConfig()
 
-    axios.get('/unreadChats').then(response => {
-      store.dispatch('setChatsNr',-(store.getters.getChatsNr))
-      store.dispatch('setChatsNr',response.data.data)
-    }).catch(error => {})
-
     return {
       appRouteTransition,
     }

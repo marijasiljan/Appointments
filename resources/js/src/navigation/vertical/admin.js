@@ -24,44 +24,54 @@ let navigation = [
     resource: 'user_management',
     children: [
       {
-        title: 'administrators',
-        to: 'admin-users-admins',
-        icon: mdiAccountMultipleOutline,
+        title: 'clients',
+        to: 'admin-users-clients',
+        icon: mdiDomain,
       },
       {
         title: 'employee',
         to: 'admin-users-employee',
         icon: mdiDomain,
-        action: 'view',
-        resource: 'employee'
+        // action: 'view',
       }
     ],
   },
 
   {
-    title: 'activities',
+    title: 'appointments',
     icon: mdiAccountSwitch,
-    to: 'admin-users-activities',
+    to: 'admin-appointments',
+    children:
+        [
+         {
+      title: 'booking_times',
+      icon: mdiAccountSwitch,
+      to: 'admin-booking_times',
+    }
+    ]
+  },
+  {
+    title: 'services',
+    icon: mdiAccountSwitch,
+    to: 'admin-services',
   },
   {
     subheader:'admin_settings'
   },
   {
-    title: 'chat',
-    to:'admin-chat',
-    badge:true,
-    badgeName:'chatsNr',
-    badgeColor:'error',
+    title: 'affiliates',
+    to:'admin-affiliates',
+    // badge:true,
+    // badgeName:'chatsNr',
+    // badgeColor:'error',
     icon: mdiForumOutline,
-    action:'view',
-    resource:'projects'
+    // action:'view',
+    // resource:'projects'
   },
   {
-    title: 'news',
-    to:'admin-blogs',
+    title: 'Prices',
+    to:'admin-prices',
     icon: mdiNewspaper,
-    action:'view',
-    resource:'news'
   },
 ];
 

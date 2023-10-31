@@ -23,7 +23,6 @@ export default {
       name:'admin-dashboard',
       meta: {
         layout: 'content',
-        hasPermission:'dashboard',
       },
     },
     {

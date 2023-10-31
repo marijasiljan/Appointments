@@ -40,6 +40,8 @@ Route::group(['prefix' => '/user'], function () {
     Route::delete('/{id}/delete', [Backend\UsersController::class, 'destroy']);
 });
 
+Route::get('/unreadChats', [Backend\UsersController::class, 'index']);
+
 Route::group(['prefix' => '/price'], function () {
     Route::get('/', [Backend\PriceController::class, 'index']);
     Route::post('/store', [Backend\PriceController::class, 'store']);

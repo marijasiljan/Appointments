@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Type\Integer;
 use Validator;
 
 class AuthController extends BaseController
@@ -30,7 +31,8 @@ class AuthController extends BaseController
             return $this->ResponseError($validator->errors(),'Invalid data!', 404);
         }
         try {
-            $verificationCode = Str::random(4);
+         //   $verificationCode = Str::random(4);
+            $verificationCode = strval(random_int(100000, 999999));
 
             $user = new User([
                 'name' => $request->input('name'),
