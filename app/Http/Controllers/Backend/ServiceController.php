@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\BaseController;
+use App\Models\Price;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,7 @@ class ServiceController extends BaseController {
 
     public function index(){
 
-        $services = Service::whereStatus(1)->get();
+        $services = Service::with('price')->whereStatus(1)->get();
 
         return $this->ResponseSuccess($services);
     }
@@ -25,8 +26,9 @@ class ServiceController extends BaseController {
         ]);
 
         if ($validator->fails()) {
-            return $this->ResponseError(0,'Invalid data.', 404);
+            return $this->ResponseError($validator->errors(),'Invalid data.', 422);
         }
+
         if($request->input('id')){
             $service = Service::find($request->input('id'));
         }

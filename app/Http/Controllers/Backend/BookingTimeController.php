@@ -20,6 +20,7 @@ class BookingTimeController extends BaseController {
         $validator = Validator::make(request()->all(), [
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'date' => 'required',
             'status' => 'required|in:0,1',
         ]);
 
@@ -34,6 +35,7 @@ class BookingTimeController extends BaseController {
 
         $bookingTime->start_time = $request->input('start_time');
         $bookingTime->end_time = $request->input('end_time');
+        $bookingTime->date = $request->input('date');
         $bookingTime->status = $request->input('status');
 
         $bookingTime->save();

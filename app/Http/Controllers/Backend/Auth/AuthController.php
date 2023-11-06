@@ -73,4 +73,13 @@ class AuthController extends BaseController
         }
         return $this->ResponseError(null, 'Invalid Credentials', 401);
     }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+
+        $user->tokens()->delete();
+
+        return $this->ResponseSuccess(null, '', 'User logged out successfully!', 200);
+    }
 }

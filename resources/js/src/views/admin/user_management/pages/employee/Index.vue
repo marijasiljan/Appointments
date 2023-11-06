@@ -1,7 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div>
-        <breadcrumbs :items="breadcrumbsItems" v-if="data.companies" />
-        <employee-table :key="tablesIndex['employee']" v-if="data.employee" :users="data.employee" :title="'employee'" :role="'employee'"></employee-table>
+        <breadcrumbs :items="breadcrumbsItems"/>
+        <employee-table :key="tablesIndex['employee']" v-if="data.length > 0" :users="data" :title="'employees'" :role="'admin'"></employee-table>
     </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
         Breadcrumbs
     },
     setup(){
-        let path = '/'+user.role+'/users/employee'
+        let path = '/users/employee'
         const tablesIndex = ref({'employee': 'initEmployee'})
         const data = ref([])
         const employeeData = ref([])
@@ -40,7 +40,7 @@ export default {
 
             breadcrumbsItems:[
                 {text: 'dashboard', disabled: false, link: { name:'admin-dashboard'}, icon:'mdiHomeOutline'},
-                {text: 'companies', disabled: true, link: null}
+                {text: 'employees', disabled: true, link: null}
             ]
         }
     }

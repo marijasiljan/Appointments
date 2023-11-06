@@ -26,31 +26,35 @@ export default {
       },
     },
     {
-      path:'chat',
-      component: () => import('@/views/admin/AdminChat.vue'),
-      name:'admin-chat',
+      path:'services',
+      component: () => import('@/views/admin/user_management/pages/services/Index.vue'),
+      name:'admin-services',
       meta: {
         layout: 'content',
-      }
-    },
-    {
-      path:'admin-blogs',
-      component: () => import('@/views/admin/blogs/Blog.vue'),
-      name:'admin-blogs',
-      meta: {
-        layout: 'content',
-        action: 'view',
-        resource:'blogs',
       },
     },
     {
-      path:'admin-user-activities',
-      component: () => import('@/views/admin/user_management/pages/Activities.vue'),
-      name:'admin-login-logs',
+      path:'price',
+      component: () => import('@/views/admin/user_management/pages/price/Index.vue'),
+      name:'admin-price',
       meta: {
         layout: 'content',
-        action: 'view',
-        resource:'login_logs',
+      },
+    },
+    {
+      path:'appointments',
+      component: () => import('@/views/admin/user_management/pages/appointments/Index.vue'),
+      name:'admin-appointments',
+      meta: {
+        layout: 'content',
+      },
+    },
+    {
+      path:'booking_times',
+      component: () => import('@/views/admin/user_management/pages/booking_times/Index.vue'),
+      name:'admin-booking_times',
+      meta: {
+        layout: 'content',
       },
     },
     {
@@ -64,33 +68,13 @@ export default {
       },
       children:[
         {
-          path:'activities',
-          name:'admin-users-activities',
-          component: () => import('@/views/admin/user_management/pages/AllActivities.vue'),
+          path:'clients',
+          name:'admin-users-clients',
+          component: () => import('@/views/admin/user_management/pages/clients/Index.vue'),
           meta: {
             layout: 'content',
             action: 'view',
-            resource:'user_activities',
-          },
-        },
-        {
-          path:'activity/:id',
-          name:'admin-user-activities',
-          component: () => import('@/views/admin/user_management/pages/Activities.vue'),
-          meta: {
-            layout: 'content',
-            action: 'view',
-            resource:'user_activities',
-          },
-        },
-        {
-          path:'admins',
-          name:'admin-users-admins',
-          component: () => import('@/views/admin/user_management/pages/admins/Index.vue'),
-          meta: {
-            layout: 'content',
-            action: 'view',
-            resource:'admins',
+            resource:'clients',
           },
         },
         {
@@ -107,8 +91,16 @@ export default {
     },
     {
       path:'profile',
+      component: () => import('@/views/admin/user_management/pages/availability/Index.vue'),
+      name:'admin-availability',
+      meta: {
+        layout: 'content',
+      }
+    },
+    {
+      path:'availability',
       component: () => import('@/views/admin/profile/Profile.vue'),
-      name:'admin-profile',
+      name:'admin-availability',
       meta: {
         layout: 'content',
       }
