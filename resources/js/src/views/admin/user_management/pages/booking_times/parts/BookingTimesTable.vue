@@ -4,6 +4,12 @@
     <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="data" :headers="headers"
                  :isLoading="isLoading" :title="title">
 
+      <template v-slot:custom-hours="slotItems">
+
+        <div v-html="slotItems.item.hours">
+
+        </div>
+      </template>
       <template v-slot:custom-actions="slotItems">
         <div style="display:flex">
 
@@ -29,15 +35,6 @@
 
       <template v-slot:add-button>
         <v-dialog v-model="dialog" max-width="1000px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" x-small dark v-bind="attrs" v-on="on"
-                   v-on:click="openModal('new')">
-              <v-icon small color="white">
-                {{ icons.mdiPlusThick }}
-              </v-icon>
-            </v-btn>
-          </template>
-
           <v-card>
             <v-card-title>
               <div class="text-h5"><span v-if="editedItem.id != 0">{{ editedItem.name }}</span>
@@ -69,6 +66,22 @@
 
                       <v-col cols="12" sm="6" md="6">
                         <v-text-field
+                            :rules="[rules.required]" :error-messages="errorMessages['days']"
+                            v-on:keyup="() => {errorMessages['days'] = ''}"
+                            v-on:keypress.enter="saveModal"
+                            v-model="editedItem.days" required :label="$t('days')"></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                            :rules="[rules.required]" :error-messages="errorMessages['employee']"
+                            v-on:keyup="() => {errorMessages['employee'] = ''}"
+                            v-on:keypress.enter="saveModal"
+                            v-model="editedItem.employee" item-value="id" required :label="$t('employee')"></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
                             :rules="[rules.required]" :error-messages="errorMessages['date']"
                             v-on:keyup="() => {errorMessages['date'] = ''}"
                             v-on:keypress.enter="saveModal"
@@ -93,7 +106,7 @@
                 <v-btn color="error" text @click="closeModal">
                   {{ $t('cancel') }}
                 </v-btn>
-                <v-btn color="primary" @click="saveModal" :loading="isButtonLoading('/booking/store')">
+                <v-btn color="primary" @click="saveModal" :loading="isButtonLoading('/availability/store')">
                   {{ $t('save') }}
                 </v-btn>
               </v-card-actions>
@@ -121,17 +134,17 @@ import {
   mdiInformationOutline,
   mdiSendOutline,
 } from "@mdi/js";
-import {computed, ref} from "@vue/composition-api";
+import {computed, onMounted, ref} from "@vue/composition-api";
 import SimpleTable from "@/components/common/SimpleTable";
 import {required, integerValidator, emailValidator} from '@core/utils/validation'
 import {useRouter} from '@core/utils';
 import axios from "axios";
 import {can} from "../../../../../../@core/libs/acl/utils";
 export default {
-  name: "BookingTimesTable",
+  name: "AvailabilityTable",
   components: {SimpleTable},
   props: {
-    bookingTimes: {
+    availability: {
       type: Array,
       required: true,
     },
@@ -171,23 +184,66 @@ export default {
     const tmpItem = ref({})
     const headers = ref([])
     const editedItem = ref({})
-    data.value = props.bookingTimes
-    console.log(data.value)
+    const adminUsers = ref([]);
+    onMounted(async () => {
+      try {
+        const response = await axios.get('/users/employee');
+        adminUsers.value = response.data;
+      } catch (error) {
+        console.error("Error fetching admin users:", error);
+      }
+    });
+    data.value = props.availability
+
     function standardModel() {
       return {
         id: 0,
         start_time: null,
         end_time: null,
+        days: null,
+        employee_id: null,
+        affiliate_id: null,
+        date: null,
         status: 1,
       };
     }
 
     editedItem.value = standardModel()
 
+    const transformedData = computed(() => {
+      return props.availability.map(item => {
+        const hoursArray = JSON.parse(item.hours);
+        const daysArray = JSON.parse(item.days);
+
+        const startTimes = hoursArray.map(hour => hour.start_time).join(', ');
+        const endTimes = hoursArray.map(hour => hour.end_time).join(', ');
+        const formattedHours = hoursArray.map(hour => {
+          return `${hour.start_time}-${hour.end_time}`;
+        }).join('<br>');
+        const formattedDays = daysArray.join(',');
+        const employee = item.employee;
+
+
+        return {
+          id: item.id,
+          start_time: startTimes,
+          end_time: endTimes,
+          hours: formattedHours,
+          days: formattedDays,
+          employee: employee ? `${employee.name} ${employee.surname}` : 'N/A',
+          date: item.date ? item.date : '/',
+          status: item.status,
+        };
+      });
+    });
+
     headers.value = [
       {text: 'id', align: 'start', value: 'id', search: true},
-      {text: 'Start Time', value: 'start_time', search: true},
-      {text: 'End Time', value: 'end_time', search: true},
+      //{text: 'Start Time', value: 'start_time', search: true},
+      //{text: 'End Time', value: 'end_time', search: true},
+      {text: 'Hours', value: 'hours', search: true, customSlot: true},
+      {text: 'Days', value: 'days', search: true},
+      {text: 'Employee', value: 'employee', search: true},
       {text: 'Date', value: 'date', search: true},
       {text: 'status', value: 'status', search: true},
       {
@@ -198,6 +254,9 @@ export default {
         search: false
       }
     ]
+
+    data.value = transformedData.value;
+
     function getStatusIcon(status){
       let statusIcons = [
         {
@@ -221,7 +280,6 @@ export default {
       tmpItem.value = item;
       let tmp = JSON.stringify(item);
       editedItem.value = JSON.parse(tmp)
-      // editedItem.value.password = null
       dialog.value = true;
     }
 
@@ -244,7 +302,7 @@ export default {
 
 
 
-        axios.post('/booking/store', fd).then(response => {
+        axios.post('/availability/store', fd).then(response => {
           console.log(response.data.data)
           if (response.data.status == true) {
             if (response.data.meta == true) {
@@ -272,7 +330,7 @@ export default {
 
     function changeStatus(item) {
       isLoading.value = true
-      axios.put('/price/changeStatus', {
+      axios.put('/availability/changeStatus', {
         'id': item.id,
         'status': item.status ? 0 : 1
       }).then(response => {
@@ -293,7 +351,7 @@ export default {
     async function deleteItem(item) {
       if (await confirmAlert({'subtitle':'confirmation_um_company_delete'})) {
         isLoading.value = true
-        axios.put( `/booking/${item.id}/delete`, {'id': item.id}).then(response => {
+        axios.put( `/availability/${item.id}/delete`, {'id': item.id}).then(response => {
           if (response.data.status) {
             let checkItem = data.value.filter(i => i.id == item.id)
             data.value.splice(data.value.indexOf(checkItem[0]), 1);

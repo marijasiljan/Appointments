@@ -1,7 +1,19 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div>
-    <h2>Availability Generator</h2> <v-divider></v-divider>
-    <label for="days">Select Days:</label> <v-divider></v-divider>
+    <h2>Availability Generator</h2> <br>
+<!--    <select v-for="emp in employees" v-model="employees">-->
+<!--      <option :value="emp">{{emp}}</option>-->
+<!--    </select>-->
+    <v-select
+        :items="adminUsers.data"
+        item-text="name"
+        item-value="id"
+        v-model="selectedAdminUserId"
+        required
+        label="Choose employee:"
+    ></v-select>
+
+    <label for="days">Select Days:</label> <v-divider></v-divider> <br>
     <v-container fluid style="display: flex">
       <div v-for="(day, index) in days" :key="index" class="day-checkbox">
         <label :for="'day-' + index">{{ day }}</label>
@@ -12,68 +24,43 @@
       ></v-checkbox>
       </div>
     </v-container>
-    <v-container fluid style="display: flex">
-      <template v-slot:add-button>
-        <v-dialog v-model="dialog" max-width="1000px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" x-small dark v-bind="attrs" v-on="on"
-                   v-on:click="openModal('new')">
-              <v-icon small color="white">
-                {{ icons.mdiPlusThick }}
-              </v-icon>
-            </v-btn>
-          </template>
+    <v-container>
+        <div class="d-flex mb-5" v-for="(availability,index) in availabilities" :key="index">
+          <div  class="day-checkbox">
+            <label for="start-time">Start Time:</label>
+            <input type="time" id="start-time" v-model="availability.start_time"/>
+          </div>
+          <div  class="day-checkbox">
+            <label for="end-time">End Time:</label>
+            <input type="time" id="end-time" v-model="availability.end_time"/>
+          </div>
 
-          <v-card>
-            <v-form ref="form">
-              <div style="max-height: 70vh;overflow: auto">
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <div>
-                        <label for="start-time">Start Time:</label>
-                        <input type="time" id="start-time" v-model="startTime"/>
-                      </div>
-                      <div>
-                        <label for="end-time">End Time:</label>
-                        <input type="time" id="end-time" v-model="endTime"/>
-                      </div>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-              </div>
-              <v-divider></v-divider>
+          <v-btn color="error" x-small dark
+                 @click="removeAvailability(index)">
+            <v-icon small color="white">
+              {{ icons.mdiDelete }}
+            </v-icon>
+          </v-btn>
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="error" text @click="closeModal">
-                  {{ $t('cancel') }}
-                </v-btn>
-                <v-btn color="primary" @click="saveModal" :loading="isButtonLoading('/availability/store')">
-                  {{ $t('save') }}
-                </v-btn>
-              </v-card-actions>
-            </v-form>
-          </v-card>
+        </div>
 
-        </v-dialog>
-      </template>
-      <div  class="day-checkbox">
-        <label for="start-time">Start Time:</label>
-        <input type="time" id="start-time" v-model="startTime"/>
-      </div>
-      <div  class="day-checkbox">
-        <label for="end-time">End Time:</label>
-        <input type="time" id="end-time" v-model="endTime"/>
-      </div>
+      <v-btn color="primary" x-small dark
+             @click="addAvailability()">
+        <v-icon small color="white">
+          {{ icons.mdiPlusThick }}
+        </v-icon>
+      </v-btn>
+
     </v-container>
-      <button>Save Availability</button>
+    <v-btn color="primary" @click="saveAvailability" :loading="isButtonLoading('/availability/store')">
+      {{ $t('save') }}
+    </v-btn>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import {ref} from "@vue/composition-api";
+import {onMounted, ref} from "@vue/composition-api";
 import {
   mdiAccountMultipleOutline, mdiAccountOutline,
   mdiCheck,
@@ -86,8 +73,20 @@ import {
 } from "@mdi/js";
 
 export default {
-  setup(props, context) {
-    let rules = {required, integerValidator, emailValidator}
+  setup() {
+
+    const adminUsers = ref([]);
+    const selectedAdminUserId = ref(null);
+
+    onMounted(async () => {
+      try {
+        const response = await axios.get('/users/employee');
+        adminUsers.value = response.data;
+      } catch (error) {
+        console.error("Error fetching admin users:", error);
+      }
+    });
+
     let icons = {
       mdiDelete,
       mdiPencil,
@@ -114,18 +113,39 @@ export default {
     const dialog = ref(false)
     const data = ref([])
     const tmpItem = ref({})
-    const headers = ref([])
     const editedItem = ref({})
+    const employees = ref([])
+    employees.value = data.value.map((i)=> i.employee)
     const selectedDays = ref([])
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    const days = ref(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+    const availabilities = ref([{
+      start_time:'09:00',
+      end_time:'17:00'
+    }])
+
+    const addAvailability = () =>{
+      availabilities.value.push({
+        start_time:'09:00',
+        end_time:'17:00'
+      })
+    }
+
+
+    const removeAvailability = (index) =>{
+      availabilities.value.splice(index,1)
+    }
+
+
     function standardModel() {
       return {
         startTime: '09:00',
         endTime: '17:00',
-      };
+        days: 'Monday, Tuesday'
+      }
     }
 
     editedItem.value = standardModel()
+
 
     async function openModal(item) {
       if (item == 'new') {
@@ -138,77 +158,73 @@ export default {
       dialog.value = true;
     }
 
+
     function closeModal() {
       dialog.value = false
       editedItem.value = standardModel()
     }
 
-    function saveModal() {
-      if (form.value.validate()) {
-        isLoading.value = true
 
-        let fd = new FormData();
-        console.log('editedItem',editedItem)
-        fd.append("id", editedItem.value.id);
+    function saveAvailability() {
+      // availabilities.value.forEach((item) => {
+      //   console.log('item',item.start_time)
+      // })
+      isLoading.value = true;
 
-        fd.append("service_id", editedItem.value.service);
-        fd.append("value", editedItem.value.value);
-        fd.append("status", editedItem.value.status);
+      const availabilityData = {
+        employee_id: selectedAdminUserId.value,
+        hours: availabilities.value,
+        days: this.selectedDays
+      };
 
+      axios.post('/availability/store', availabilityData).then(response => {
+        if (response.data.status == true) {
+          if (response.data.meta == true) {
+            data.value.unshift(response.data.data)
+          } else {
+            let checkItem = data.value.filter(item => item.id == tmpItem.value.id)
+            data.value[data.value.indexOf(checkItem[0])] = response.data.data
 
-
-        axios.post('/price/store', fd).then(response => {
-          console.log(response.data.data)
-          if (response.data.status == true) {
-            if (response.data.meta == true) {
-              data.value.unshift(response.data.data)
-            } else {
-              let checkItem = data.value.filter(item => item.id == tmpItem.value.id)
-              data.value[data.value.indexOf(checkItem[0])] = response.data.data
-
-            }
-            simpleTableKey.value = Math.random();
-            errorMessages.value = []
-            dialog.value = false
           }
-          isLoading.value = false;
-          window.location.reload();
-        }).catch(error => {
-          console.log('error', error)
-          if (error.response.status == 422) {
-            errorMessages.value = error.response.data.errors
-          }
-          isLoading.value = false
-        })
-      }
+          simpleTableKey.value = Math.random();
+          errorMessages.value = []
+          dialog.value = false
+        }
+        isLoading.value = false;
+        window.location.reload();
+      }).catch(error => {
+        if (error.response.status == 422) {
+          errorMessages.value = error.response.data.errors
+        }
+        isLoading.value = false
+      })
     }
 
 
     return {
-      route,
-      headers,
       data,
       icons,
       editedItem,
       dialog,
       closeModal,
       openModal,
-      saveModal,
-      changeStatus,
+      saveAvailability,
       simpleTableKey,
       errorMessages,
-      getStatusIcon,
       isLoading,
-      deleteItem,
-      rules,
       form,
       tmpRole,
-      services,
       selectedDays,
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    };
-  },
-};
+      days,
+      availabilities,
+      addAvailability,
+      removeAvailability,
+      adminUsers,
+      selectedAdminUserId,
+         };
+    },
+}
+
 
 </script>
 <style scoped>

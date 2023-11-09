@@ -50,14 +50,6 @@ export default {
       },
     },
     {
-      path:'booking_times',
-      component: () => import('@/views/admin/user_management/pages/booking_times/Index.vue'),
-      name:'admin-booking_times',
-      meta: {
-        layout: 'content',
-      },
-    },
-    {
       path:'user_management',
       component: () => import('@/views/admin/user_management/Router.vue'),
       redirect:{name:'admin-users-clients'},
@@ -90,7 +82,7 @@ export default {
       ]
     },
     {
-      path:'profile',
+      path:'availability-generator',
       component: () => import('@/views/admin/user_management/pages/availability/Index.vue'),
       name:'admin-availability',
       meta: {
@@ -99,8 +91,8 @@ export default {
     },
     {
       path:'availability',
-      component: () => import('@/views/admin/profile/Profile.vue'),
-      name:'admin-availability',
+      component: () => import('@/views/admin/user_management/pages/booking_times/Index.vue'),
+      name:'admin-availability-list',
       meta: {
         layout: 'content',
       }

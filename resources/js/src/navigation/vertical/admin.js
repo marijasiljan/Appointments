@@ -1,9 +1,9 @@
 import {
   mdiHomeOutline,
-  mdiCalendar,
+  mdiCalendarMonth ,
   mdiAlarm,
   mdiAccountMultipleOutline,
-  mdiDomain,
+  mdiCalendarAccount,
   mdiAccountSwitch,
   mdiAccountSettings, mdiAccountCash,
 } from '@mdi/js'
@@ -38,31 +38,30 @@ let navigation = [
       }
     ],
   },
-
   {
     title: 'appointments',
-    icon: mdiCalendar,
+    action:'view',
+    icon: mdiCalendarMonth,
     to: 'admin-appointments',
+  },
+  {
+    title: 'Availability',
+    icon: mdiCalendarAccount,
+    action: 'none',
     children:
         [
           {
-            title: 'appointments',
-            icon: mdiCalendar,
-            to: 'admin-appointments',
+            title: 'Availability',
+            icon: mdiCalendarAccount,
+            to: 'admin-availability-list',
             action: 'view',
           },
           {
-            title: 'availability',
-            icon: mdiCalendar,
+            title: 'Availability Generator',
+            icon: mdiAlarm,
             to: 'admin-availability',
             action: 'view',
           },
-         {
-            title: 'Booking Time Slots',
-            icon: mdiAlarm,
-            to: 'admin-booking_times',
-            action: 'view',
-    }
     ]
   },
   {

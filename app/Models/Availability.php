@@ -4,27 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Availability extends Model
 {
-    protected $table = 'price';
+    protected $table = 'availability';
 
     protected $fillable = [
         'date',
-        'day',
-        'start_time',
-        'end_time',
+        'days',
+        'hours',
         'status',
         'affiliate_id',
         'employee_id',
     ];
 
-    public function employee()
+    public function employee() : BelongsTo
     {
-        return $this->belongsTo(User::class, 'admin_id')->where('role', 'admin');
+        return $this->belongsTo(User::class, 'employee_id')->where('role', 'admin');
     }
 
-    public function affiliate()
+    public function affiliate(): BelongsTo
     {
         return $this->belongsTo(Affiliate::class, 'affiliate_id');
     }

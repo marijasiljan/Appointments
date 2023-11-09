@@ -47,8 +47,6 @@ Route::group(['prefix' => '/users'], function () {
     Route::put('/changeStatus', [Backend\UsersController::class, 'changeStatus']);
 });
 
-Route::get('/unreadChats', [Backend\UsersController::class, 'index']);
-
 Route::group(['prefix' => '/price'], function () {
     Route::get('/', [Backend\PriceController::class, 'index']);
     Route::post('/store', [Backend\PriceController::class, 'store']);
@@ -56,12 +54,6 @@ Route::group(['prefix' => '/price'], function () {
     Route::put('/{id}/delete', [Backend\PriceController::class, 'destroy']);
     Route::put('/changeStatus', [Backend\PriceController::class, 'changeStatus']);
 
-});
-
-Route::group(['prefix' => '/booking'], function () {
-    Route::get('/', [Backend\BookingTimeController::class, 'index']);
-    Route::post('/store', [Backend\BookingTimeController::class, 'store']);
-    Route::post('/{id}/delete', [Backend\BookingTimeController::class, 'destroy']);
 });
 
 Route::group(['prefix' => '/appointments'], function () {
@@ -77,7 +69,9 @@ Route::group(['prefix' => '/affiliates'], function () {
 });
 
 Route::group(['prefix' => '/availability'], function () {
-    Route::get('/', [Backend\AvailabilityController::class, 'index']);
+    Route::get('/', [Backend\AvailabilityController::class, 'getIntervals']);
+    Route::post('/slots', [Backend\AvailabilityController::class, 'generateTimeSlots']);
     Route::post('/store', [Backend\AvailabilityController::class, 'store']);
     Route::delete('/{id}/delete', [Backend\AvailabilityController::class, 'destroy']);
+    Route::delete('/history', [Backend\AvailabilityController::class, 'history']);
 });

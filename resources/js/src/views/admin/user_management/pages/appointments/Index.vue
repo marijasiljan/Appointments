@@ -1,7 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div>
     <breadcrumbs :items="breadcrumbsItems"/>
-    <appointments-table :key="tablesIndex['Appointments']" v-if="data.length > 0" :appointments="data" :title="'appointments'" ></appointments-table>
+    <appointments-table :key="tablesIndex['appointment']" v-if="data.length > 0" :appointments="data" :title="'appointments'" ></appointments-table>
   </div>
 </template>
 
@@ -27,8 +27,8 @@ export default {
     }
     store.dispatch('setSimpleLoader',true)
     axios.get(path).then(response => {
-      console.log(response.data.data)
       data.value = response.data.data
+      console.log(data.value)
       store.dispatch('setSimpleLoader',false)
     }).catch(error => {})
 

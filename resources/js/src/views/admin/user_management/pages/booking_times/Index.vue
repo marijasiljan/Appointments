@@ -1,29 +1,28 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div>
     <breadcrumbs :items="breadcrumbsItems"/>
-    <booking-times-table :key="tablesIndex" v-if="data.length > 0" :bookingTimes="data" :title="'booking_times'"></booking-times-table>
-
+    <availability-table :key="tablesIndex['availability']" v-if="data.length > 0" :title="'Availabilities'" :availability="data"></availability-table>
   </div>
 </template>
 
 <script>
 
 import {ref} from "@vue/composition-api";
-import BookingTimesTable from "./parts/BookingTimesTable.vue"
+import AvailabilityTable from "./parts/BookingTimesTable.vue"
 import Breadcrumbs from "../../../../../components/common/Breadcrumbs";
 import {mdiClose} from "@mdi/js";
 export default {
-  name: "admin-booking_times",
+  name: "admin-availability-list",
   components: {
-    BookingTimesTable,
+    AvailabilityTable,
     Breadcrumbs
   },
   setup(){
-    let path = '/booking'
-    const tablesIndex = ref( 'initBookingTime')
+    let path = '/availability'
+    const tablesIndex = ref( {'availability': 'initAvailability'})
     const data = ref([])
     console.log(data)
-    const bookingTimeData = ref([])
+    const availabilityTimeData = ref([])
     let icons = {
       mdiClose,
     }
@@ -31,19 +30,18 @@ export default {
     axios.get(path).then(response => {
       data.value = response.data.data
       store.dispatch('setSimpleLoader',false)
-      tablesIndex.value = Math.random()
     }).catch(error => {})
 
 
     return {
       data,
       icons,
-      bookingTimeData,
+      availabilityTimeData,
       tablesIndex,
 
       breadcrumbsItems:[
         {text: 'dashboard', disabled: false, link: { name:'admin-dashboard'}, icon:'mdiHomeOutline'},
-        {text: 'booking_times', disabled: true, link: null}
+        {text: 'Availabilities', disabled: true, link: null}
       ]
     }
   }
