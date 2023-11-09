@@ -65,14 +65,6 @@
                             v-model="editedItem.end_time" required :label="$t('End Time')"></v-text-field>
                       </v-col>
 
-<!--                      <v-col cols="12" sm="6" md="6">-->
-<!--                        <v-text-field-->
-<!--                            :rules="[rules.required]" :error-messages="errorMessages['client']"-->
-<!--                            v-on:keyup="() => {errorMessages['client'] = ''}"-->
-<!--                            v-on:keypress.enter="saveModal"-->
-<!--                            v-model="editedItem.client" item-value="id" required :label="$t('client')"></v-text-field>-->
-<!--                      </v-col>-->
-
                       <v-col cols="12" sm="6" md="3">
                         <v-select
                             :items="clients"
@@ -83,12 +75,24 @@
                         ></v-select>
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                            :rules="[rules.required]" :error-messages="errorMessages['employee']"
-                            v-on:keyup="() => {errorMessages['employee'] = ''}"
-                            v-on:keypress.enter="saveModal"
-                            v-model="editedItem.employee" item-value="id" required :label="$t('employee')"></v-text-field>
+                      <v-col cols="12" sm="6" md="3">
+                        <v-select
+                            :items="employees"
+                            item-text="name"
+                            item-value="id"
+                            v-model="editedItem.employee"
+                            required :label="$t('employee')"
+                        ></v-select>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="3">
+                        <v-select
+                            :items="services"
+                            item-text="name"
+                            item-value="id"
+                            v-model="editedItem.service"
+                            required :label="$t('service')"
+                        ></v-select>
                       </v-col>
 
                       <v-col cols="12" sm="6" md="6">
@@ -195,31 +199,24 @@ export default {
     const tmpItem = ref({})
     const headers = ref([])
     const editedItem = ref({})
-    const adminUsers = ref([])
+    const employees = ref([])
     const clients = ref([])
-
-
-
-    //employee:
-    onMounted(async () => {
-      try {
-        const response = await axios.get('/users/employee');
-        adminUsers.value = response.data;
-      } catch (error) {
-        console.error("Error fetching admin users:", error);
-      }
-    });
-    //client:
-    onMounted(async () => {
-      try {
-        const response = await axios.get('/users/client');
-        clients.value = response.data.data;
-      } catch (error) {
-        console.error("Error fetching client users:", error);
-      }
-    });
-
+    const services = ref([])
     data.value = props.appointments
+
+    onMounted(async () => {
+      try {
+        const clientsResponse = await axios.get('/users/client');
+        const employeesResponse = await axios.get('/users/employee');
+        const servicesResponse = await axios.get('/services');
+
+        clients.value = clientsResponse.data.data;
+        employees.value = employeesResponse.data.data;
+        services.value = servicesResponse.data.data;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    });
 
     function standardModel() {
       return {
@@ -237,33 +234,14 @@ export default {
 
     editedItem.value = standardModel()
 
-    const transformedData = computed(() => {
-      return props.appointments.map(item => {
-
-        const employee = item.employee;
-        const client = item.client;
-
-        return {
-          id: item.id,
-          start_time: item.start_time,
-          end_time: item.end_time,
-          employee: employee ? `${employee.name} ${employee.surname}` : 'N/A',
-          client: client ? `${client.name} ${client.surname}` : 'N/A',
-          date: item.date ? item.date : '/',
-          price: item.price,
-          service: item.service.name,
-          status: item.status,
-        };
-      });
-    });
 
     headers.value = [
       {text: 'id', align: 'start', value: 'id', search: true},
       {text: 'Start Time', value: 'start_time', search: true},
       {text: 'End Time', value: 'end_time', search: true},
-      {text: 'Client', value: 'client', search: true},
-      {text: 'Employee', value: 'employee', search: true},
-      {text: 'Service', value: 'service', search: true},
+      {text: 'Client',  value: 'client.name', search: true},
+      {text: 'Employee', value: 'employee.name', search: true},
+      {text: 'Service', value: 'service.name', search: true},
       {text: 'Price', value: 'price', search: true},
       {text: 'Date', value: 'date', search: true},
       {text: 'status', value: 'status', search: true},
@@ -275,8 +253,6 @@ export default {
         search: false
       }
     ]
-
-    data.value = transformedData.value;
 
     function getStatusIcon(status){
       let statusIcons = [
@@ -319,16 +295,16 @@ export default {
 
         fd.append("start_time", editedItem.value.start_time);
         fd.append("end_time", editedItem.value.end_time);
-        fd.append("client", editedItem.value.client);
-        fd.append("employee", editedItem.value.employee);
-        fd.append("service", editedItem.value.service);
+        fd.append("client_id", editedItem.value.client);
+        fd.append("employee_id", editedItem.value.employee);
+        fd.append("service_id", editedItem.value.service);
         fd.append("price", editedItem.value.price);
         fd.append("date", editedItem.value.date);
         fd.append("status", editedItem.value.status);
 
 
 
-        axios.post('/availability/store', fd).then(response => {
+        axios.post('/appointments/store', fd).then(response => {
           console.log(response.data.data)
           if (response.data.status == true) {
             if (response.data.meta == true) {
@@ -413,7 +389,8 @@ export default {
       form,
       tmpRole,
       clients,
-      adminUsers,
+      employees,
+      services,
     };
   },
 }

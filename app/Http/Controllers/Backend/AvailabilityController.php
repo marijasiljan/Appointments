@@ -92,6 +92,10 @@ class AvailabilityController extends BaseController
             ->where('status', 1)
             ->latest()->first();
 
+        if($availableSlots){
+
+
+
         $hours = json_decode($availableSlots->hours, true);
         if (!empty($hours)) {
             $slots = [];
@@ -103,13 +107,20 @@ class AvailabilityController extends BaseController
                 $period = CarbonPeriod::create($startPeriod, '30 minutes', $endPeriod);
 
                 foreach ($period as $date) {
+                    $endDateTime = $date->copy()->addMinutes(30);
+
                     $appointments = Appointment::whereStatus(1)
-                        ->where(function($q) use ($date){
-                            $q->where('start_time', 'like', '%'.$date->format('H:i').'%');
+                        ->where(function($q) use ($date, $endDateTime){
+                            $q->where('start_time', 'like', '%'.$date->format('H:i').'%')
+                                ->where('start_time', '<', $endDateTime)
+                                ->where('end_time', '>', $date);
                         })
                         ->exists();
                     if(!$appointments){
-                        $slots[] = $date->format('H:i');
+                        $slots[] = [
+                            'start_time' => $date->format('H:i'),
+                            'end_time' => $endDateTime->format('H:i')
+                        ];
                     }
                 }
 
@@ -120,6 +131,10 @@ class AvailabilityController extends BaseController
 
         } else {
             return $this->ResponseError("No available slots found");
+        }
+        }
+        else{
+            return $this->ResponseError(null, 'No available time slots for that employee.', 400);
         }
 
     }

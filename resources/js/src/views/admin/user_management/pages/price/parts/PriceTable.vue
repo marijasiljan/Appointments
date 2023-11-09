@@ -344,15 +344,6 @@ export default {
           return price;
         }
       };
-      // return this.data.map((price) => {
-      //   const exchangeRate = this.exchangeRates[this.selectedCurrency];
-      //   const convertedPrice = price.value * exchangeRate;
-      //   return {
-      //     ...price,
-      //     // price: service.price[0].value,
-      //     price: convertedPrice.toFixed(2)
-      //   };
-      // });
     }
   },
 }

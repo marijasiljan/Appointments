@@ -60,6 +60,7 @@ Route::group(['prefix' => '/appointments'], function () {
     Route::get('/', [Backend\AppointmentController::class, 'index']);
     Route::post('/store', [Backend\AppointmentController::class, 'store']);
     Route::post('/{id}/delete', [Backend\AppointmentController::class, 'destroy']);
+    Route::put('/{id}/delete', [Backend\AppointmentController::class, 'destroy']);
 });
 
 Route::group(['prefix' => '/affiliates'], function () {
