@@ -22,13 +22,18 @@ class AvailabilityController extends BaseController
     public function store(Request $request)
     {
         $validator = Validator::make(request()->all(), [
-            'date' => '',
-            'hours' => '',
+            'date' => 'nullable',
+            'hours' => 'required',
             'status' => '',
-            'employee_id' => '',
+            'employee_id' => 'required',
             'affiliate_id' => '',
-            'days' => 'required'
-
+            'days' => function ($attribute, $value, $fail) {
+                if (empty(request('date'))) {
+                    if (empty($value)) {
+                        $fail($attribute.' is required when date is not provided.');
+                    }
+                }
+            },
         ]);
 
         if ($validator->fails()) {
@@ -68,74 +73,73 @@ class AvailabilityController extends BaseController
         return $this->ResponseSuccess($availableSlots);
     }
 
-    public function generateTimeSlots(Request $request) {
-
+    public function generateTimeSlots(Request $request)
+    {
         $validator = Validator::make(request()->all(), [
             'date' => 'required',
             'employee_id' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return $this->ResponseError($validator->errors(),'Invalid data.', 422);
+            return $this->ResponseError($validator->errors(), 'Invalid data.', 422);
         }
 
         $employeeId = $request->input('employee_id');
         $date = Carbon::parse($request->input('date'));
         $day = $date->format('l');
 
-        $availableSlots = Availability::where('employee_id', $employeeId)  //site availabilities za toj employee
-            ->where(function($q) use ($day){
-                $q->where('date' , request('date'))->orWhere(function($query) use ($day){  //ako imat datum vrati gi site availabilities za datumot, ako nemat
-                    $query->where('days','like','%'.$day.'%')->where('date',null);              // sporedi go denot od input datumot so site days vo availability
+        $availableSlots = Availability::where('employee_id', $employeeId)
+            ->where(function ($q) use ($day) {
+                $q->where('date', request('date'))->orWhere(function ($query) use ($day) {
+                    $query->where('days', 'like', '%' . $day . '%')->where('date', null);
                 });
             })
             ->where('status', 1)
-            ->latest()->first();
+            ->latest()
+            ->first();
 
-        if($availableSlots){
+        if ($availableSlots) {
+            $hours = json_decode($availableSlots->hours, true);
 
+            if (!empty($hours)) {
+                $slots = [];
 
+                foreach ($hours as $hour) {
+                    $startPeriod = Carbon::parse($hour['start_time']);
+                    $endPeriod = Carbon::parse($hour['end_time']);
 
-        $hours = json_decode($availableSlots->hours, true);
-        if (!empty($hours)) {
-            $slots = [];
-
-            foreach ($hours as $hour) {
-                $startPeriod = Carbon::parse($hour['start_time']);
-                $endPeriod = Carbon::parse($hour['end_time']);
-
-                $period = CarbonPeriod::create($startPeriod, '30 minutes', $endPeriod);
-
-                foreach ($period as $date) {
-                    $endDateTime = $date->copy()->addMinutes(30);
-
-                    $appointments = Appointment::whereStatus(1)
-                        ->where(function($q) use ($date, $endDateTime){
-                            $q->where('start_time', 'like', '%'.$date->format('H:i').'%')
-                                ->where('start_time', '<', $endDateTime)
-                                ->where('end_time', '>', $date);
-                        })
-                        ->exists();
-                    if(!$appointments){
-                        $slots[] = [
-                            'start_time' => $date->format('H:i'),
-                            'end_time' => $endDateTime->format('H:i')
-                        ];
+                    $period = CarbonPeriod::create($startPeriod, '30 minutes', $endPeriod);
+                    foreach ($period as $h) {
+                        $endDateTime = $h->copy()->addMinutes(30);
+                        $appointmentsExist = Appointment::whereStatus(1)
+                            ->where(function ($q) use ($date,$endDateTime,$h) {
+                                $q->where('date', $date->format('Y-m-d'))
+                                    ->where('employee_id', request("employee_id"))
+                                    ->where(function ($q) use ($h, $endDateTime) {
+                                            $q->where('start_time', $h->format('H:i:s'))
+                                                ->where('end_time',  $endDateTime->format('H:i:s'));
+                                    });
+                            })
+                            ->exists();
+                        if (!$appointmentsExist) {
+                            $slots[] = [
+                                'start_time' => $h->format('H:i'),
+                                'end_time' => $endDateTime->format('H:i')
+                            ];
+                        }
                     }
                 }
 
+                 array_pop($slots);
+
+                return $this->ResponseSuccess($slots);
+            } else {
+                return $this->ResponseError("No available slots found");
             }
-
-         array_pop($slots);
-         return $this->ResponseSuccess($slots);
-
         } else {
-            return $this->ResponseError("No available slots found");
-        }
-        }
-        else{
             return $this->ResponseError(null, 'No available time slots for that employee.', 400);
         }
-
     }
+
 }
+

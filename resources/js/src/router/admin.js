@@ -26,6 +26,14 @@ export default {
       },
     },
     {
+      path:'profile',
+      component: () => import('@/views/admin/profile/Profile.vue'),
+      name:'admin-profile',
+      meta: {
+        layout: 'content',
+      },
+    },
+    {
       path:'services',
       component: () => import('@/views/admin/user_management/pages/services/Index.vue'),
       name:'admin-services',

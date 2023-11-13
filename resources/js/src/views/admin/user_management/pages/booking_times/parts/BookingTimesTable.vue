@@ -214,7 +214,7 @@ export default {
       return props.availability.map(item => {
         const hoursArray = JSON.parse(item.hours);
         const daysArray = JSON.parse(item.days);
-
+console.log("hours", hoursArray)
         const startTimes = hoursArray.map(hour => hour.start_time).join(', ');
         const endTimes = hoursArray.map(hour => hour.end_time).join(', ');
         const formattedHours = hoursArray.map(hour => {
@@ -293,7 +293,6 @@ export default {
         isLoading.value = true
 
         let fd = new FormData();
-        console.log('editedItem',editedItem)
         fd.append("id", editedItem.value.id);
 
         fd.append("start_time", editedItem.value.start_time);
@@ -303,7 +302,6 @@ export default {
 
 
         axios.post('/availability/store', fd).then(response => {
-          console.log(response.data.data)
           if (response.data.status == true) {
             if (response.data.meta == true) {
               data.value.unshift(response.data.data)

@@ -67,10 +67,10 @@ class UsersController extends BaseController {
             'name' => 'required',
             'surname' => 'required',
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => '',
             'birthday' => 'required',
             'status' => 'required',
-            'role' => 'required',
+            'role' => '',
             'affiliate_id' => '',
         ]);
 

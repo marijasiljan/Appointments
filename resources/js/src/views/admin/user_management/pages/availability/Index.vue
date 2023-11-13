@@ -1,30 +1,53 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div>
     <h2>Availability Generator</h2> <br>
-<!--    <select v-for="emp in employees" v-model="employees">-->
-<!--      <option :value="emp">{{emp}}</option>-->
-<!--    </select>-->
-    <v-select
-        :items="adminUsers.data"
-        item-text="name"
-        item-value="id"
-        v-model="selectedAdminUserId"
-        required
-        label="Choose employee:"
-    ></v-select>
 
-    <label for="days">Select Days:</label> <v-divider></v-divider> <br>
-    <v-container fluid style="display: flex">
-      <div v-for="(day, index) in days" :key="index" class="day-checkbox">
-        <label :for="'day-' + index">{{ day }}</label>
-      <v-checkbox
-          v-model="selectedDays"
-          :value="day"
-          :id="'day-' + index"
-      ></v-checkbox>
-      </div>
-    </v-container>
-    <v-container>
+    <v-row>
+      <v-container>
+        <v-select
+            :items="adminUsers.data"
+            item-text="name"
+            item-value="id"
+            v-model="selectedAdminUserId"
+            required
+            label="Choose employee:"
+        ></v-select>
+      </v-container>
+    </v-row>
+
+    <v-row>
+      <v-container>
+        <v-btn @click="toggle"><v-icon small>
+          {{ icons.mdiCalendarMonth }}
+        </v-icon></v-btn>
+        <div v-if="active">
+          <v-text-field
+              outlined
+              type="date"
+              v-model="date"
+              hide-details="auto"
+              class="mb-2"
+          ></v-text-field>
+        </div>
+      </v-container>
+    </v-row><br>
+    <v-divider></v-divider><br>
+    <v-row>
+        <v-label for="days">Select Days:</v-label><br>
+        <v-container fluid style="display: flex">
+          <div v-for="(day, index) in days" :key="index" class="day-checkbox">
+            <label :for="'day-' + index">{{ day }}</label>
+            <v-checkbox
+                v-model="selectedDays"
+                :value="day"
+                :id="'day-' + index"
+            ></v-checkbox>
+          </div>
+        </v-container>
+    </v-row>
+    <v-divider></v-divider><br>
+    <v-row>
+      <v-container>
         <div class="d-flex mb-5" v-for="(availability,index) in availabilities" :key="index">
           <div  class="day-checkbox">
             <label for="start-time">Start Time:</label>
@@ -41,17 +64,17 @@
               {{ icons.mdiDelete }}
             </v-icon>
           </v-btn>
-
         </div>
+        <v-btn color="primary" x-small dark
+               @click="addAvailability()">
+          <v-icon small color="white">
+            {{ icons.mdiPlusThick }}
+          </v-icon>
+        </v-btn>
 
-      <v-btn color="primary" x-small dark
-             @click="addAvailability()">
-        <v-icon small color="white">
-          {{ icons.mdiPlusThick }}
-        </v-icon>
-      </v-btn>
-
-    </v-container>
+      </v-container>
+    </v-row><br>
+    <v-divider></v-divider><br>
     <v-btn color="primary" @click="saveAvailability" :loading="isButtonLoading('/availability/store')">
       {{ $t('save') }}
     </v-btn>
@@ -62,14 +85,22 @@
 import axios from "axios";
 import {onMounted, ref} from "@vue/composition-api";
 import {
-  mdiAccountMultipleOutline, mdiAccountOutline,
+  mdiAccountMultipleOutline,
+  mdiAccountOutline,
+  mdiCalendarMonth,
   mdiCheck,
   mdiCloseThick,
-  mdiDelete, mdiDotsVertical,
+  mdiDelete,
+  mdiDotsVertical,
   mdiEyeCheckOutline,
   mdiEyeOffOutline,
-  mdiEyeOutline, mdiInformationOutline, mdiLink,
-  mdiPencil, mdiPlusThick, mdiSendOutline, mdiTrashCanOutline
+  mdiEyeOutline,
+  mdiInformationOutline,
+  mdiLink,
+  mdiPencil,
+  mdiPlusThick,
+  mdiSendOutline,
+  mdiTrashCanOutline
 } from "@mdi/js";
 
 export default {
@@ -102,7 +133,8 @@ export default {
       mdiAccountMultipleOutline,
       mdiInformationOutline,
       mdiAccountOutline,
-      mdiSendOutline
+      mdiSendOutline,
+      mdiCalendarMonth
     }
 
     const tmpRole = ref(null)
@@ -117,6 +149,7 @@ export default {
     const employees = ref([])
     employees.value = data.value.map((i)=> i.employee)
     const selectedDays = ref([])
+    const date = ref([])
     const days = ref(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
     const availabilities = ref([{
       start_time:'09:00',
@@ -130,11 +163,9 @@ export default {
       })
     }
 
-
     const removeAvailability = (index) =>{
       availabilities.value.splice(index,1)
     }
-
 
     function standardModel() {
       return {
@@ -145,7 +176,6 @@ export default {
     }
 
     editedItem.value = standardModel()
-
 
     async function openModal(item) {
       if (item == 'new') {
@@ -158,23 +188,19 @@ export default {
       dialog.value = true;
     }
 
-
     function closeModal() {
       dialog.value = false
       editedItem.value = standardModel()
     }
 
-
     function saveAvailability() {
-      // availabilities.value.forEach((item) => {
-      //   console.log('item',item.start_time)
-      // })
       isLoading.value = true;
 
       const availabilityData = {
         employee_id: selectedAdminUserId.value,
         hours: availabilities.value,
-        days: this.selectedDays
+        days: this.selectedDays,
+        date: this.date.value
       };
 
       axios.post('/availability/store', availabilityData).then(response => {
@@ -200,7 +226,6 @@ export default {
       })
     }
 
-
     return {
       data,
       icons,
@@ -221,8 +246,15 @@ export default {
       removeAvailability,
       adminUsers,
       selectedAdminUserId,
+      date,
+      active: false,
          };
     },
+  methods: {
+    toggle () {
+      this.active = !this.active
+    }
+  }
 }
 
 

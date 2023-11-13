@@ -37,6 +37,7 @@
         "@casl/vue": "1.x",
         "@ckeditor/ckeditor5-build-classic": "^34.0.0",
         "@ckeditor/ckeditor5-vue2": "^3.0.0",
+        "@mathieustan/vue-datepicker": "^0.2.11",
         "@mdi/js": "^7.1.96",
         "@vue/composition-api": "1.6.3",
         "@vuetify/cli-plugin-utils": "^0.0.9",
