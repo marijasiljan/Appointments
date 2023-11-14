@@ -18,7 +18,7 @@ export default {
         Breadcrumbs
     },
     setup(){
-        let path = '/users/employee'
+        let path = '/users/employeeAdmin'
         const tablesIndex = ref({'employee': 'initEmployee'})
         const data = ref([])
         const employeeData = ref([])

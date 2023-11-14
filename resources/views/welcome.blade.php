@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
 
-    <title id="tab_title">Intolerance Test | System</title>
+    <title id="tab_title">AppMango | System</title>
     <link id="favicon" rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
     <link rel="preconnect" href="https://fonts.gstatic.com" />

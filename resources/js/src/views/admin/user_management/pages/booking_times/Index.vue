@@ -18,7 +18,7 @@ export default {
     Breadcrumbs
   },
   setup(){
-    let path = '/availability'
+    let path = '/availability/availabilityAdmin'
     const tablesIndex = ref( {'availability': 'initAvailability'})
     const data = ref([])
     console.log(data)

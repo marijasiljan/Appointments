@@ -18,7 +18,7 @@ export default {
     Breadcrumbs
   },
   setup(){
-    let path = '/price'
+    let path = '/price/pricesAdmin'
     const tablesIndex = ref({'price': 'initPrice'})
     const data = ref([])
     const priceData = ref([])

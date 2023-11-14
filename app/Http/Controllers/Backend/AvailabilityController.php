@@ -12,11 +12,35 @@ use Validator;
 
 class AvailabilityController extends BaseController
 {
+    public function getIntervalsAdmin() {
+
+        $availableSlots = Availability::with('employee')->get();
+
+        return $this->ResponseSuccess($availableSlots);
+    }
+
     public function getIntervals() {
 
         $availableSlots = Availability::with('employee')->whereStatus(1)->get();
 
         return $this->ResponseSuccess($availableSlots);
+    }
+
+    public function changeStatus(Request $request) {
+
+        $id = $request->input('id');
+        $newStatus = $request->input('status');
+
+        $availability = Availability::find($id);
+
+        if (!$availability) {
+            return $this->ResponseError(0,'Service not found!', 404);
+        }
+
+        $availability->status = $newStatus;
+        $availability->save();
+
+        return $this->ResponseSuccess($availability);
     }
 
     public function store(Request $request)

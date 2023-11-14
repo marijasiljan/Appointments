@@ -3,8 +3,16 @@
 
     <v-select v-model="selectedCurrency" :items="currencies" label="Select Currency"></v-select>
 
-    <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="data" :headers="headers"
+    <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="calculateConvertedPrices" :headers="headers"
                  :isLoading="isLoading" :title="title">
+
+      <template v-slot:custom-status="slotItems">
+        <div style="display:flex">
+          <v-chip :color="slotItems.item.status == 1 ? 'success' : 'error'">
+            {{ slotItems.item.status==1 ? 'active' : 'inactive'}}
+          </v-chip>
+        </div>
+      </template>
 
       <template v-slot:custom-actions="slotItems">
         <div style="display:flex">
@@ -58,7 +66,7 @@
                             :rules="[rules.required]" :error-messages="errorMessages['value']"
                             v-on:keyup="() => {errorMessages['value'] = ''}"
                             v-on:keypress.enter="saveModal"
-                            v-model="editedItem.value" required :label="$t('Price')"></v-text-field>
+                            v-model="editedItem.convertedPrice " required :label="$t('Price')"></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="6" md="3">
                         <v-select
@@ -170,6 +178,7 @@ export default {
     data.value = props.prices
     const services = ref([])
     services.value = data.value.map((i)=> i.service)
+
     function standardModel() {
       return {
         id: 0,
@@ -183,9 +192,9 @@ export default {
 
     headers.value = [
       {text: 'id', align: 'start', value: 'id', search: true},
-      {text: 'value', value: 'value', search: true},
+      {text: 'Price', value: 'convertedPrice', search: true},
       {text: 'service', value: 'service.name', search: true},
-      {text: 'status', value: 'status', search: true},
+      {text: 'status', value: 'status', search: true, customSlot: true},
       {
         text: 'actions',
         value: 'actions',
@@ -194,6 +203,7 @@ export default {
         search: false
       }
     ]
+
     function getStatusIcon(status){
       let statusIcons = [
         {
@@ -209,6 +219,7 @@ export default {
       return statusIcons.find(icon => icon.icon === status) || statusIcons[0];
 
     }
+
     async function openModal(item) {
       if (item == 'new') {
         item = standardModel()
@@ -266,28 +277,30 @@ export default {
       }
     }
 
-    function changeStatus(item) {
-      isLoading.value = true
-      axios.put('/price/changeStatus', {
-        'id': item.id,
-        'status': item.status ? 0 : 1
-      }).then(response => {
-        if (response.data.status) {
-          item.status = response.data.data
-          flashMsg('success', response.data.message)
-        }
-        isLoading.value = false;
-        window.location.reload();
-      }).catch(error => {
-        if (error.response.status == 422) {
-          flashMsg('error', error.response.data.message)
-        }
-        isLoading.value = false
-      })
+    async function changeStatus(item) {
+      if (await confirmAlert({'subtitle': 'confirmation_standards_change_status'})) {
+        isLoading.value = true
+        axios.put('/price/changeStatus', {
+          'id': item.id,
+          'status': item.status ? 0 : 1
+        }).then(response => {
+          if (response.data.status) {
+            item.status = response.data.data
+            flashMsg('success', response.data.message)
+          }
+          isLoading.value = false;
+          window.location.reload();
+        }).catch(error => {
+          if (error.response.status == 422) {
+            flashMsg('error', error.response.data.message)
+          }
+          isLoading.value = false
+        })
+      }
     }
 
     async function deleteItem(item) {
-      if (await confirmAlert({'subtitle':'confirmation_um_company_delete'})) {
+      if (await confirmAlert({'subtitle':'are_you_sure_you_want_to_delete'})) {
         isLoading.value = true
         axios.put( `/price/${item.id}/delete`, {'id': item.id}).then(response => {
           if (response.data.status) {
@@ -335,16 +348,17 @@ export default {
     };
   },
   computed: {
-    calculateConvertedPrice() {
-      return (price, currency) => {
-        const exchangeRate = this.exchangeRates[currency];
-        if (exchangeRate) {
-          return (price * exchangeRate).toFixed(2);
-        } else {
-          return price;
-        }
-      };
-    }
+    calculateConvertedPrices() {
+      return this.data.map((item) => {
+        const exchangeRate = this.exchangeRates[this.selectedCurrency];
+        const convertedPrice = item.value * exchangeRate;
+
+        return {
+          ...item,
+          convertedPrice: convertedPrice.toFixed(2),
+        };
+      });
+    },
   },
 }
 </script>

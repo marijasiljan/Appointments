@@ -18,7 +18,7 @@ export default {
         Breadcrumbs
     },
     setup(){
-        let path = '/users/client'
+        let path = '/users/clientAdmin'
         const tablesIndex = ref({'client': 'initClient'})
         const data = ref([])
         const employeeData = ref([])

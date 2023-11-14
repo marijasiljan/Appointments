@@ -8,7 +8,7 @@
             <v-avatar rounded size="120" class="me-6">
               <v-avatar :color="user.profile_picture ? '' : 'primary'" :class="user.profile_picture ? '' : 'v-avatar-light-bg primary--text'" size="120" rounded class="mb-4">
                 <v-img v-if="user.profile_picture" :src="user.profile_picture+'?api_token='+token"></v-img>
-                <span v-else class="font-weight-semibold text-5xl">{{ avatarText(user.name+' '+user.last_name) }}</span>
+                <span v-else class="font-weight-semibold text-5xl">{{ avatarText(user.name+' '+user.surname) }}</span>
               </v-avatar>
             </v-avatar>
           </v-col>
@@ -101,7 +101,7 @@
 <!--          </v-col>-->
 
           <v-col cols="12">
-            <v-btn color="primary" @click="saveModal" class="me-3 mt-4">
+            <v-btn color="primary" @click="saveModal" :loading="isButtonLoading('/users/store')" class="me-3 mt-4">
               {{ $t('save') }}
             </v-btn>
 
@@ -126,7 +126,7 @@ export default {
       default: () => {},
     },
   },
-  setup(_,context) {
+  setup(props,context) {
 
     let rules = { required, integerValidator, emailValidator }
     let path = '/users/store'
@@ -149,26 +149,17 @@ export default {
         fd.append("surname", editedItem.value.surname);
         fd.append("email", editedItem.value.email);
         fd.append("birthday", editedItem.value.birthday);
-        fd.append("status", editedItem.value.status);
-        fd.append("role", editedItem.value.role);
-        fd.append("password", editedItem.value.password);
+        fd.append("role", user.role);
+        fd.append("status", user.status);
+        fd.append("password", user.password);
 
 
         axios.post(path, fd).then(response => {
-          if (response.data.status == true) {
-            if (response.data.meta == true) {
-              data.value.unshift(response.data.data)
-            } else {
-              let checkItem = data.value.filter(item => item.id == tmpItem.value.id)
-              data.value[data.value.indexOf(checkItem[0])] = response.data.data
 
-            }
-            simpleTableKey.value = Math.random();
-            errorMessages.value = []
-            dialog.value = false
-          }
-          isLoading.value = false;
-          window.location.reload();
+          store.dispatch('updateToken', response.data.data.remember_token);
+          store.dispatch('updateUser', response.data.data);
+          window.user = store.state.user
+          window.location = '/';
         }).catch(error => {
           if (error.response.status == 422) {
             errorMessages.value = error.response.data.errors

@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 class PriceController extends BaseController {
 
+    public function indexAdmin(){
+
+        $prices = Price::with('service')->get();
+
+        return $this->ResponseSuccess($prices);
+    }
+
     public function index(){
 
         $prices = Price::with('service')->whereStatus(1)->get();

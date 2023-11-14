@@ -18,7 +18,7 @@ export default {
     Breadcrumbs
   },
   setup(){
-    let path = '/appointments'
+    let path = '/appointments/appAdmin'
     const tablesIndex = ref({'appointment': 'initAppointment'})
     const data = ref([])
     const appointmentData = ref([])

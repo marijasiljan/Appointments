@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends BaseController {
+    public function indexAdmin(){
+
+        $appointments = Appointment::with('employee', 'client', 'service')
+            ->get();
+
+        return $this->ResponseSuccess($appointments);
+    }
+
     public function index(){
 
         $appointments = Appointment::with('employee', 'client', 'service')
@@ -15,6 +23,23 @@ class AppointmentController extends BaseController {
             ->get();
 
         return $this->ResponseSuccess($appointments);
+    }
+
+    public function changeStatus(Request $request) {
+
+        $id = $request->input('id');
+        $newStatus = $request->input('status');
+
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return $this->ResponseError(0,'Service not found!', 404);
+        }
+
+        $appointment->status = $newStatus;
+        $appointment->save();
+
+        return $this->ResponseSuccess($appointment);
     }
 
     public function store(Request $request){

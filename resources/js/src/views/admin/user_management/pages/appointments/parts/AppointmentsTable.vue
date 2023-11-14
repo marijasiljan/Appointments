@@ -4,6 +4,14 @@
     <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="data" :headers="headers"
                  :isLoading="isLoading" :title="title">
 
+      <template v-slot:custom-status="slotItems">
+        <div style="display:flex">
+          <v-chip :color="slotItems.item.status == 1 ? 'success' : 'error'">
+            {{ slotItems.item.status==1 ? 'active' : 'inactive'}}
+          </v-chip>
+        </div>
+      </template>
+
       <template v-slot:custom-hours="slotItems">
 
         <div v-html="slotItems.item.hours">
@@ -91,7 +99,7 @@
                             item-text="name"
                             item-value="id"
                             v-model="editedItem.service"
-                            required :label="$t('service')"
+                            required :label="$t('Service')"
                         ></v-select>
                       </v-col>
 
@@ -99,7 +107,7 @@
                         <v-text-field
                             :rules="[rules.required]" :error-messages="errorMessages['date']"
                             v-on:keyup="() => {errorMessages['date'] = ''}"
-                            v-on:keypress.enter="saveModal"
+                            v-on:keypress.enter="saveModal" type="date"
                             v-model="editedItem.date" required :label="$t('date')"></v-text-field>
                       </v-col>
 
@@ -244,7 +252,7 @@ export default {
       {text: 'Service', value: 'service.name', search: true},
       {text: 'Price', value: 'price', search: true},
       {text: 'Date', value: 'date', search: true},
-      {text: 'status', value: 'status', search: true},
+      {text: 'status', value: 'status', search: true, customSlot: true},
       {
         text: 'actions',
         value: 'actions',
@@ -330,28 +338,30 @@ export default {
       }
     }
 
-    function changeStatus(item) {
-      isLoading.value = true
-      axios.put('/appointments/changeStatus', {
-        'id': item.id,
-        'status': item.status ? 0 : 1
-      }).then(response => {
-        if (response.data.status) {
-          item.status = response.data.data
-          flashMsg('success', response.data.message)
-        }
-        isLoading.value = false;
-        window.location.reload();
-      }).catch(error => {
-        if (error.response.status == 422) {
-          flashMsg('error', error.response.data.message)
-        }
-        isLoading.value = false
-      })
+    async function changeStatus(item) {
+      if (await confirmAlert({'subtitle': 'confirmation_standards_change_status'})) {
+        isLoading.value = true
+        axios.put('/appointments/changeStatus', {
+          'id': item.id,
+          'status': item.status ? 0 : 1
+        }).then(response => {
+          if (response.data.status) {
+            item.status = response.data.data
+            flashMsg('success', response.data.message)
+          }
+          isLoading.value = false;
+          window.location.reload();
+        }).catch(error => {
+          if (error.response.status == 422) {
+            flashMsg('error', error.response.data.message)
+          }
+          isLoading.value = false
+        })
+      }
     }
 
     async function deleteItem(item) {
-      if (await confirmAlert({'subtitle':'confirmation_um_company_delete'})) {
+      if (await confirmAlert({'subtitle':'confirmation_appointment_delete'})) {
         isLoading.value = true
         axios.put( `/appointments/${item.id}/delete`, {'id': item.id}).then(response => {
           if (response.data.status) {

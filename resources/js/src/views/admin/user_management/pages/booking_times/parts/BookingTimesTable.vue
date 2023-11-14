@@ -4,12 +4,21 @@
     <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="data" :headers="headers"
                  :isLoading="isLoading" :title="title">
 
+      <template v-slot:custom-status="slotItems">
+        <div style="display:flex">
+          <v-chip :color="slotItems.item.status == 1 ? 'success' : 'error'">
+            {{ slotItems.item.status==1 ? 'active' : 'inactive'}}
+          </v-chip>
+        </div>
+      </template>
+
       <template v-slot:custom-hours="slotItems">
 
         <div v-html="slotItems.item.hours">
 
         </div>
       </template>
+
       <template v-slot:custom-actions="slotItems">
         <div style="display:flex">
 
@@ -25,6 +34,7 @@
               {{ getStatusIcon(slotItems.item.status)['icon'] }}
             </v-icon>
           </v-btn>
+
           <v-btn class="mr-1" v-on:click="deleteItem(slotItems.item)" color="error" x-small>
             <v-icon small color="white">
               {{ icons.mdiTrashCanOutline }}
@@ -48,7 +58,7 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col cols="12" sm="6" md="3">
+                        <v-col cols="12" sm="6" md="3">
                         <v-text-field
                             :rules="[rules.required]" :error-messages="errorMessages['start_time']"
                             v-on:keyup="() => {errorMessages['start_time'] = ''}"
@@ -56,13 +66,14 @@
                             v-model="editedItem.start_time" required :label="$t('Start time')"></v-text-field>
                       </v-col>
 
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                            :rules="[rules.required]" :error-messages="errorMessages['end_time']"
-                            v-on:keyup="() => {errorMessages['end_time'] = ''}"
-                            v-on:keypress.enter="saveModal"
-                            v-model="editedItem.end_time" required :label="$t('End Time')"></v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field
+                              :rules="[rules.required]" :error-messages="errorMessages['end_time']"
+                              v-on:keyup="() => {errorMessages['end_time'] = ''}"
+                              v-on:keypress.enter="saveModal"
+                              v-model="editedItem.end_time" required :label="$t('End Time')"></v-text-field>
+                        </v-col>
+
 
                       <v-col cols="12" sm="6" md="6">
                         <v-text-field
@@ -84,7 +95,7 @@
                         <v-text-field
                             :rules="[rules.required]" :error-messages="errorMessages['date']"
                             v-on:keyup="() => {errorMessages['date'] = ''}"
-                            v-on:keypress.enter="saveModal"
+                            v-on:keypress.enter="saveModal" type="date"
                             v-model="editedItem.date" required :label="$t('date')"></v-text-field>
                       </v-col>
 
@@ -115,6 +126,7 @@
 
         </v-dialog>
       </template>
+
     </SimpleTable>
   </div>
 </template>
@@ -245,7 +257,7 @@ console.log("hours", hoursArray)
       {text: 'Days', value: 'days', search: true},
       {text: 'Employee', value: 'employee', search: true},
       {text: 'Date', value: 'date', search: true},
-      {text: 'status', value: 'status', search: true},
+      {text: 'status', value: 'status', search: true, customSlot: true},
       {
         text: 'actions',
         value: 'actions',
@@ -326,24 +338,26 @@ console.log("hours", hoursArray)
       }
     }
 
-    function changeStatus(item) {
-      isLoading.value = true
-      axios.put('/availability/changeStatus', {
-        'id': item.id,
-        'status': item.status ? 0 : 1
-      }).then(response => {
-        if (response.data.status) {
-          item.status = response.data.data
-          flashMsg('success', response.data.message)
-        }
-        isLoading.value = false;
-        window.location.reload();
-      }).catch(error => {
-        if (error.response.status == 422) {
-          flashMsg('error', error.response.data.message)
-        }
-        isLoading.value = false
-      })
+    async function changeStatus(item) {
+      if (await confirmAlert({'subtitle': 'confirmation_standards_change_status'})) {
+        isLoading.value = true
+        axios.put('/availability/changeStatus', {
+          'id': item.id,
+          'status': item.status ? 0 : 1
+        }).then(response => {
+          if (response.data.status) {
+            item.status = response.data.data
+            flashMsg('success', response.data.message)
+          }
+          isLoading.value = false;
+          window.location.reload();
+        }).catch(error => {
+          if (error.response.status == 422) {
+            flashMsg('error', error.response.data.message)
+          }
+          isLoading.value = false
+        })
+      }
     }
 
     async function deleteItem(item) {

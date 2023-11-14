@@ -30,6 +30,20 @@ class UsersController extends BaseController {
         }
     }
 
+    public function getEmployeeAdmin() {
+
+        $users = User::whereRole('admin')->get();
+
+        return $this->ResponseSuccess($users);
+    }
+
+    public function getClientAdmin() {
+
+        $users = User::whereRole('client')->get();
+
+        return $this->ResponseSuccess($users);
+    }
+
     public function getEmployee() {
 
         $users = User::whereRole('admin')->whereStatus(1)->get();

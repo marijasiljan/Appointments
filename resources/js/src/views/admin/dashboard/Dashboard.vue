@@ -32,8 +32,8 @@
         <analytics-statistics-card></analytics-statistics-card>
         </v-col>
     </v-row>
-    <v-row class="centered">
-      <v-col cols="9" sm="6" md="10">
+    <v-row>
+      <v-col cols="24" sm="6" md="12">
         <crm-weekly-sales></crm-weekly-sales>
       </v-col>
     </v-row>

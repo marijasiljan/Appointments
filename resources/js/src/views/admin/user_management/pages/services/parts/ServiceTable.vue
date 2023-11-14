@@ -5,9 +5,16 @@
     <SimpleTable ref="simpleTable" :key="simpleTableKey" :items="servicesWithPrice" :headers="headers"
                  :isLoading="isLoading" :title="title">
 
+      <template v-slot:custom-status="slotItems">
+        <div style="display:flex">
+          <v-chip :color="slotItems.item.status == 1 ? 'success' : 'error'">
+            {{ slotItems.item.status==1 ? 'active' : 'inactive'}}
+          </v-chip>
+        </div>
+      </template>
+
       <template v-slot:custom-actions="slotItems">
         <div style="display:flex">
-
           <v-btn class="mr-1" v-on:click="openModal(slotItems.item)" color="primary" x-small>
             <v-icon small color="white">
               {{ icons.mdiPencil }}
@@ -20,6 +27,7 @@
               {{ getStatusIcon(slotItems.item.status)['icon'] }}
             </v-icon>
           </v-btn>
+
           <v-btn class="mr-1" v-on:click="deleteItem(slotItems.item)" color="error" x-small>
             <v-icon small color="white">
               {{ icons.mdiTrashCanOutline }}
@@ -191,7 +199,7 @@ export default {
       {text: 'Service', value: 'name', search: true},
       {text: 'category', value: 'category', search: true},
       { text: 'price', value: 'price', search: true },
-      {text: 'status', value: 'status', search: true},
+      {text: 'status', value: 'status', search: true, customSlot: true},
       {
         text: 'actions',
         value: 'actions',
@@ -215,6 +223,7 @@ export default {
       return statusIcons.find(icon => icon.icon === status) || statusIcons[0];
 
     }
+
     async function openModal(item) {
       if (item == 'new') {
         item = standardModel()
@@ -269,27 +278,29 @@ export default {
       }
     }
 
-    function changeStatus(item) {
-      isLoading.value = true
-      axios.put('/changeStatus', {
-        'id': item.id,
-        'status': item.status ? 0 : 1
-      }).then(response => {
-        if (response.data.status) {
-          item.status = response.data.data
-          flashMsg('success', response.data.message)
-        }
-        isLoading.value = false
-      }).catch(error => {
-        if (error.response.status == 422) {
-          flashMsg('error', error.response.data.message)
-        }
-        isLoading.value = false
-      })
+    async function changeStatus(item) {
+      if (await confirmAlert({'subtitle': 'confirmation_standards_change_status'})) {
+        isLoading.value = true
+        axios.put('/services/changeStatus', {
+          'id': item.id,
+          'status': item.status ? 0 : 1
+        }).then(response => {
+          if (response.data.status) {
+            item.status = response.data.data
+            flashMsg('success', response.data.message)
+          }
+          isLoading.value = false
+        }).catch(error => {
+          if (error.response.status == 422) {
+            flashMsg('error', error.response.data.message)
+          }
+          isLoading.value = false
+        })
+      }
     }
 
     async function deleteItem(item) {
-      if (await confirmAlert({'subtitle':'confirmation_um_company_delete'})) {
+      if (await confirmAlert({'subtitle':'confirmation_delete_service'})) {
         isLoading.value = true
         axios.put( `/services/${item.id}/delete`, {'id': item.id}).then(response => {
           if (response.data.status) {
