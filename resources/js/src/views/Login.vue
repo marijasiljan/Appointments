@@ -97,8 +97,8 @@
                         if (response.data.status == true) {
 
                             flashMsg('success', i18n.t('hold_on_we_are_logging_you_in'))
-                            // axios.defaults.headers.common['Authorization'] = responseData.token_type + ' ' + responseData.access_token;
-                            store.dispatch('updateToken', response.data.data.remember_token);
+                            axios.defaults.headers.common['Authorization'] = response.data.data.token;
+                            store.dispatch('updateToken', response.data.data.token);
                             store.dispatch('updateUser', response.data.data);
                             window.user = store.state.user
                            window.location = '/';

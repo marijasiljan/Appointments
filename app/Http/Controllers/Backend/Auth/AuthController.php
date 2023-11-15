@@ -65,7 +65,7 @@ class AuthController extends BaseController
         if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             $user = Auth::user();
             $token = $user->createToken('LoginToken')->plainTextToken;
-            $user->remember_token = $token;
+            $user->token = $token;
             $user->save();
 
 
@@ -77,8 +77,11 @@ class AuthController extends BaseController
     public function logout(Request $request)
     {
         $user = $request->user();
-
+        $token = $user->createToken('LoginToken')->plainTextToken;
         $user->tokens()->delete();
+
+        $user->token = $token;
+        $user->save();
 
         return $this->ResponseSuccess(null, '', 'User logged out successfully!', 200);
     }
