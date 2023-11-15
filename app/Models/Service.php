@@ -16,9 +16,9 @@ class Service extends Model
         return $this->hasMany(Appointment::class);
     }
 
-    public function price(): BelongsTo
+    public function price(): HasMany
     {
-        return $this->belongsTo(Price::class);
+        return $this->hasMany(Price::class);
     }
 
     use HasFactory;

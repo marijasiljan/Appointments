@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Price extends Model
 {
     protected $table = 'price';
 
-    public function services(): HasMany
+    public function service(): BelongsTo
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsTo(Service::class);
     }
 
 

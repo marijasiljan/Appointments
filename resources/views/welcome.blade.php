@@ -7,12 +7,28 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
 
-    <title id="tab_title">Intolerance Test | System</title>
+    <title id="tab_title">AppMango | System</title>
     <link id="favicon" rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+{{--    <link rel="icon" href="/images/icon.png" type="image/gif" sizes="16x16">--}}
+{{--    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">--}}
+{{--    <meta content="width=device-width, initial-scale=1.0" name="viewport" >--}}
+{{--    <meta content="Blaxcut - Barbershop Website Template" name="description" >--}}
+{{--    <meta content="" name="keywords" >--}}
+{{--    <meta content="" name="author" >--}}
+    <!-- CSS Files
+    ================================================== -->
+{{--    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" id="bootstrap">--}}
+{{--    <link href="/css/mdb.min.css" rel="stylesheet" type="text/css" id="mdb" >--}}
+{{--    <link href="/css/plugins.css" rel="stylesheet" type="text/css" >--}}
+{{--    <link href="/css/style.css" rel="stylesheet" type="text/css" >--}}
+{{--    <link href="/css/coloring.css" rel="stylesheet" type="text/css" >--}}
+    <!-- color scheme -->
+{{--    <link id="colors" href="/public/css/colors/scheme-01.css" rel="stylesheet" type="text/css" >--}}
 
     <script src="{{ mix("/js/app.js") }}" defer></script>
 </head>

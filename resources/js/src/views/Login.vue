@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-wrapper auth-v2">
+  <div class="auth-wrapper auth-v2 background-image-container">
     <div class="auth-inner">
       <!-- brand logo -->
       <router-link to="/" class="brand-logo d-flex align-center">
@@ -10,36 +10,33 @@
 
       <v-row class="auth-row ma-0">
         <v-col lg="8" class="d-none d-lg-block position-relative overflow-hidden pa-0">
-          <div class="auth-illustrator-wrapper">
+<!--          <div class="auth-illustrator-wrapper">-->
             <!-- triangle bg -->
-            <img height="362" class="auth-mask-bg" :src="`/assets/images/misc/mask-v2-${$vuetify.theme.dark ? 'dark' : 'light'}.png`" alt=""/>
 
             <!-- tree -->
-<!--            <v-img height="226" width="300" class="auth-tree"-->
-<!--                   src="/assets/images/misc/tree-4.png">-->
-<!--            </v-img>-->
-
+<!--              <div class="background-image-container">-->
+<!--                  <img src="../assets/images/login.png" alt="Background Image">-->
+<!--              </div>-->
             <!-- 3d character -->
-            <div class="d-flex align-center h-full pa-16 pe-0">
-<!--            <img alt="image" src="/assets/images/3d-characters/group-light.png" style="background-size: contain;height: 602px;max-width: 100%;" class="auth-3d-group"/>-->
-              <v-img contain max-width="100%" height="692" class="auth-3d-group" :src="loginImage"></v-img>
-            </div>
-          </div>
+<!--          </div>-->
         </v-col>
 
-        <v-col lg="4" class="d-flex align-center auth-bg pa-10 pb-0">
+        <v-col lg="4" class="align-center">
           <v-row>
+<!--              <div class="background-image-container">-->
+<!--                  <img src="../assets/images/Barbershop.png" alt="Background Image">-->
+<!--              </div>-->
             <v-col cols="12" sm="8" md="6" lg="12" class="mx-auto">
               <v-card flat>
                 <v-card-text>
                   <p class="text-2xl font-weight-semibold text--primary mb-2">{{$t('welcome_to')}} {{ appName }}</p>
-                  <p class="mb-2">{{$t('welcome_to_umbau_subtitle')}}</p>
+                  <p class="mb-2" >{{$t('welcome_to_umbau_subtitle')}}</p>
                 </v-card-text>
                 <!-- login form -->
                 <v-card-text>
                   <v-form @submit.prevent="login">
                     <v-text-field v-model="email" outlined :label="$t('email')" :placeholder="$t('email')"
-                                  hide-details="auto" class="mb-6"></v-text-field>
+                                  hide-details="auto" class="mb-6" color="#cf814d" ></v-text-field>
 
                     <v-text-field
                       v-model="password"
@@ -51,24 +48,24 @@
                       hide-details="auto"
                       class="mb-2"
                       @click:append="isPasswordVisible = !isPasswordVisible"
+                      color="#cf814d"
                     ></v-text-field>
 
                     <div class="d-flex align-center justify-space-between flex-wrap">
-                      <v-checkbox hide-details :label="$t('remember_me')" class="mt-0"></v-checkbox>
+                      <v-checkbox hide-details :label="$t('remember_me')" class="mt-0" color="#cf814d"></v-checkbox>
 
                       <!-- forget link -->
-                      <router-link :to="{ name: 'auth-forgot-password' }" class="d-flex align-center text-sm">{{$t('forgot_password')}}</router-link>
+                      <router-link :to="{ name: 'auth-forgot-password' }" class="d-flex align-center text-sm" style="color: #cf814d">{{$t('forgot_password')}}</router-link>
                     </div>
 
-                    <v-btn block color="primary" type="submit" class="mt-6" :loading="isButtonLoading('/login')"> {{ $t('login') }}</v-btn>
+                    <v-btn block type="submit" class="mt-6" style="background-color: #cf814d" :loading="isButtonLoading('/login')"> {{ $t('login') }}</v-btn>
                   </v-form>
                 </v-card-text>
 
-                <!-- create new account  -->
-<!--                <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">-->
-<!--                  <p class="mb-0 me-2">{{ $t('new_on_our_platform') }}</p>-->
-<!--                  <span @click="register()"> <a>{{$t('create_an_account')}}</a> </span>-->
-<!--                </v-card-text>-->
+                <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
+                  <p class="mb-0 me-2">{{ $t('new_on_our_platform') }}</p>
+                  <span @click="register()"> <a style="color: #cf814d" >{{$t('create_an_account')}}</a> </span>
+                </v-card-text>
               </v-card>
             </v-col>
           </v-row>
@@ -97,18 +94,19 @@
                         if (response.data.status == true) {
 
                             flashMsg('success', i18n.t('hold_on_we_are_logging_you_in'))
-                            // axios.defaults.headers.common['Authorization'] = responseData.token_type + ' ' + responseData.access_token;
-                            store.dispatch('updateToken', response.data.data.remember_token);
+                            axios.defaults.headers.common['Authorization'] = response.data.data.token;
+                            store.dispatch('updateToken', response.data.data.token);
                             store.dispatch('updateUser', response.data.data);
                             window.user = store.state.user
-                           window.location = '/';
+                            localStorage.setItem('user', JSON.stringify(response.data.data));
+                           window.location = '/home';
                         }
                     }).catch(error => {
                         console.log(error);
-                      // flashMsg('error', error.response.data.message)
-                      // if(error.response.data.errors == 'not_verified'){
-                      //   router.replace('/send-email-verification')
-                      // }
+                      flashMsg('error', error.response.data.message)
+                      if(error.response.data.errors == 'not_verified'){
+                        router.replace('/send-email-verification')
+                      }
                   })
             }
 
@@ -138,4 +136,24 @@
 
 <style lang="scss" scoped>
   @import '@resources/sass/preset/pages/auth.scss';
+  .auth-inner {
+      position: relative;
+  }
+
+  .background-image-container {
+      background-image:url('../assets/images/Barbershop.png') !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      //z-index: -1; /* Ensure the background stays behind other elements */
+  }
+
+  .background-image-container img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+  }
 </style>

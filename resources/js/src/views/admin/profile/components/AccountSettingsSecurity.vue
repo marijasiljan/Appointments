@@ -69,7 +69,7 @@ import { ref } from '@vue/composition-api'
 
 export default {
   setup() {
-    let path = '/'+user.role+'/profile/password'
+    let path = '/password/reset'
     const isCurrentPasswordVisible = ref(false)
     const isNewPasswordVisible = ref(false)
     const isCPasswordVisible = ref(false)

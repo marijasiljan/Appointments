@@ -16,9 +16,9 @@
         <account-settings-account></account-settings-account>
       </v-tab-item>
 
-      <v-tab-item>
-        <account-settings-security></account-settings-security>
-      </v-tab-item>
+<!--      <v-tab-item>-->
+<!--        <account-settings-security></account-settings-security>-->
+<!--      </v-tab-item>-->
     </v-tabs-items>
   </v-card>
 </template>
@@ -44,8 +44,7 @@ export default {
 
     // tabs
     const tabs = [
-      { title: 'profile', icon: mdiAccountOutline },
-      { title: 'password', icon: mdiLockOpenOutline },
+      { title: 'profile', icon: mdiAccountOutline }
     ]
 
     // account settings data

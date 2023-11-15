@@ -8,22 +8,50 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends BaseController {
-    public function index(){
+    public function indexAdmin(){
 
-        $appointments = Appointment::whereStatus(1)->get();
+        $appointments = Appointment::with('employee', 'client', 'service')
+            ->get();
 
         return $this->ResponseSuccess($appointments);
+    }
+
+    public function index(){
+
+        $appointments = Appointment::with('employee', 'client', 'service')
+            ->whereStatus(1)
+            ->get();
+
+        return $this->ResponseSuccess($appointments);
+    }
+
+    public function changeStatus(Request $request) {
+
+        $id = $request->input('id');
+        $newStatus = $request->input('status');
+
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return $this->ResponseError(0,'Service not found!', 404);
+        }
+
+        $appointment->status = $newStatus;
+        $appointment->save();
+
+        return $this->ResponseSuccess($appointment);
     }
 
     public function store(Request $request){
 
         $validator = Validator::make(request()->all(), [
-            'booking_time_id' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
             'client_id' => 'required',
             'employee_id' => 'required',
             'price' => 'required',
-            'status' => 'required',
-            'service_id' => 'required'
+            'date' => 'required',
+            'service_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -35,12 +63,14 @@ class AppointmentController extends BaseController {
             $appointment = new Appointment();
         }
 
-        $appointment->booking_time_id = $request->input('booking_time_id');
+        $appointment->start_time = $request->input('start_time');
+        $appointment->end_time = $request->input('end_time');
         $appointment->client_id = $request->input('client_id');
         $appointment->employee_id = $request->input('employee_id');
         $appointment->price = $request->input('price');
-        $appointment->status = $request->input('status');
+        $appointment->date = $request->input('date');
         $appointment->service_id = $request->input('service_id');
+        $appointment->status = 1;//$request->input('status');
 
         $appointment->save();
 

@@ -10,10 +10,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Appointment extends Model
 {
 
-
-    public function user(): BelongsTo
+    public function employee() : BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'employee_id')->where('role', 'admin');
+    }
+
+    public function client() : BelongsTo
+    {
+        return $this->belongsTo(User::class, 'client_id')->where('role', 'client');
     }
 
     public function service(): BelongsTo

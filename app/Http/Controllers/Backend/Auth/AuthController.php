@@ -65,12 +65,24 @@ class AuthController extends BaseController
         if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
             $user = Auth::user();
             $token = $user->createToken('LoginToken')->plainTextToken;
-            $user->remember_token = $token;
+            $user->token = $token;
             $user->save();
 
 
             return $this->ResponseSuccess( $user, '', 'User logged in successfully!', 200);
         }
         return $this->ResponseError(null, 'Invalid Credentials', 401);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $token = $user->createToken('LoginToken')->plainTextToken;
+        $user->tokens()->delete();
+
+        $user->token = $token;
+        $user->save();
+
+        return $this->ResponseSuccess(null, '', 'User logged out successfully!', 200);
     }
 }

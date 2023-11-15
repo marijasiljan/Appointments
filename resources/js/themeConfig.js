@@ -2,7 +2,7 @@ import { mdiCheckboxBlankCircleOutline } from '@mdi/js'
 
 const themeConfig = {
   app: {
-    name: 'Intolerance test',
+    name: 'AppMango',
     logo: '/assets/images/logos/logo.png',
     isDark: false,
     isRtl: false,

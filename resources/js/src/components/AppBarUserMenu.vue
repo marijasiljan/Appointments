@@ -33,7 +33,7 @@
           <v-badge bottom color="success" overlap offset-x="12" offset-y="12" class="ms-4" dot>
             <v-avatar size="40px" v-bind="attrs" color="primary" class="v-avatar-light-bg primary--text" v-on="on">
               <v-img v-if="user.profile_picture" :src="user.profile_picture+'?api_token='+token"></v-img>
-              <span v-else>{{ avatarText(user.name+' '+user.last_name) }}</span>
+              <span v-else>{{ avatarText(user.name+' '+user.surname) }}</span>
             </v-avatar>
           </v-badge>
         </template>
@@ -42,11 +42,11 @@
             <v-badge bottom color="success" overlap offset-x="12" offset-y="12" class="ms-4" dot>
               <v-avatar size="40px" color="primary" class="v-avatar-light-bg primary--text">
                 <v-img v-if="user.profile_picture" :src="user.profile_picture+'?api_token='+token"></v-img>
-                <span v-else>{{ avatarText(user.name+' '+user.last_name) }}</span>
+                <span v-else>{{ avatarText(user.name+' '+user.surname) }}</span>
               </v-avatar>
             </v-badge>
             <div class="d-inline-flex flex-column justify-center ms-3" style="vertical-align: middle">
-              <span class="text--primary font-weight-semibold mb-n1">{{ user.name+' '+user.last_name}}</span>
+              <span class="text--primary font-weight-semibold mb-n1">{{ user.name+' '+user.surname}}</span>
               <small class="text--disabled text-capitalize" v-if="user.role =='company'">{{ user.company.company_name }}</small>
               <small class="text--disabled text-capitalize" v-if="user.role == 'admin'">{{ user.role }}</small>
             </div>
@@ -67,16 +67,16 @@
           </v-list-item>
 
           <!-- Chat -->
-          <v-list-item :to="{ name: user.role+'-chat' }" v-if="user.role !='store' && user.role !='sales_manager'">
-            <v-list-item-icon class="me-2">
-              <v-icon size="22">
-                {{ icons.mdiChatOutline }}
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title :to="{ name: user.role+'-chat' }">{{ $t('chat') }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+<!--          <v-list-item :to="{ name: user.role+'-chat' }" v-if="user.role !='store' && user.role !='sales_manager'">-->
+<!--            <v-list-item-icon class="me-2">-->
+<!--              <v-icon size="22">-->
+<!--                {{ icons.mdiChatOutline }}-->
+<!--              </v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-content>-->
+<!--              <v-list-item-title :to="{ name: user.role+'-chat' }">{{ $t('chat') }}</v-list-item-title>-->
+<!--            </v-list-item-content>-->
+<!--          </v-list-item>-->
 
           <!-- Logout -->
           <v-list-item href="#">

@@ -1,9 +1,11 @@
 <template>
-  <div class="auth-wrapper auth-v2">
+  <div class="auth-wrapper auth-v2 background-image-container">
     <div class="auth-inner">
       <!-- brand logo -->
       <router-link to="/" class="brand-logo d-flex align-center">
-        <v-img :src="appLogo" max-height="80px" max-width="150px" alt="logo" contain class="me-3"></v-img>
+<!--          <div class="background-image-container">-->
+<!--              <img src="../assets/images/Barbershop.png" alt="Background Image">-->
+<!--          </div>-->
       </router-link>
       <!--/ brand logo -->
 
@@ -11,28 +13,14 @@
         <v-col lg="7" class="d-none d-lg-block position-relative overflow-hidden pa-0">
           <div class="auth-illustrator-wrapper">
             <!-- triangle bg -->
-            <img
-              height="362"
-              class="auth-mask-bg"
-              :src="require(`@/assets/images/misc/mask-v2-${$vuetify.theme.dark ? 'dark' : 'light'}.png`).default"
-            />
-
-
-
             <!-- 3d character -->
-            <div class="d-flex align-center h-full pa-16 pe-0">
-              <v-img
-                contain
-                max-width="100%"
-                height="710"
-                class="auth-3d-group"
-                :src="loginImage"
-              ></v-img>
-            </div>
           </div>
         </v-col>
 
-        <v-col lg="5" class="d-flex align-center auth-bg pa-10 pb-0">
+        <v-col lg="5" class="align-center">
+<!--          <div class="background-image-container">-->
+<!--              <img src="../assets/images/Barbershop.png" alt="Background Image">-->
+<!--          </div>-->
           <v-row>
             <v-col cols="12" sm="8" md="6" lg="12" class="mx-auto">
               <v-card flat style="max-width: 100% !important;">
@@ -54,6 +42,7 @@
                         :placeholder="$t('name')"
                         hide-details="auto"
                         class="mb-6"
+                        color="#cf814d"
                       ></v-text-field>
                     </v-col>
                     <v-col sm="12" md="6">
@@ -66,6 +55,7 @@
                         :placeholder="$t('surname')"
                         hide-details="auto"
                         class="mb-6"
+                        color="#cf814d"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -80,40 +70,43 @@
                       :placeholder="$t('email')"
                       hide-details="auto"
                       class="mb-6"
+                      color="#cf814d"
                     ></v-text-field>
-
+                      </v-col>
+                          <v-col sm="12" md="6">
                           <v-text-field
-                              v-model="password"
+                          v-model="password"
+                          :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                          outlined
+                          :rules="[validators.required, validators.passwordValidator]"
+                          :type="isPasswordVisible ? 'text' : 'password'"
+                          :label="$t('password')"
+                          density="compact"
+                          placeholder="Enter your password"
+                          prepend-inner-icon="mdi-lock-outline"
+                          variant="outlined"
+                          class="mb-6"
+                          @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                          color="#cf814d"
+                      ></v-text-field>
+                          </v-col>
+                          <v-col sm="12" md="6">
+                          <v-text-field
+                              v-model="passwordConfirmation"
                               :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
                               outlined
-                              :rules="[validators.required, validators.passwordValidator]"
+                              :rules="[validators.required, matchPassword]"
                               :type="isPasswordVisible ? 'text' : 'password'"
-                              :label="$t('password')"
+                              :label="$t('confirm_password')"
                               density="compact"
-                              placeholder="Enter your password"
+                              placeholder="Confirm your password"
                               prepend-inner-icon="mdi-lock-outline"
                               variant="outlined"
                               class="mb-6"
                               @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                              color="#cf814d"
                           ></v-text-field>
-
-<!--                          <v-text-field-->
-<!--                              v-model="passwordConfirmation"-->
-<!--                              :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"-->
-<!--                              outlined-->
-<!--                              :rules="[validators.required, matchPassword]"-->
-<!--                              :type="isPasswordVisible ? 'text' : 'password'"-->
-<!--                              :label="$t('confirm_password')"-->
-<!--                              density="compact"-->
-<!--                              placeholder="Confirm your password"-->
-<!--                              prepend-inner-icon="mdi-lock-outline"-->
-<!--                              variant="outlined"-->
-<!--                              class="mb-6"-->
-<!--                              @click:append-inner="isPasswordVisible = !isPasswordVisible"-->
-<!--                          ></v-text-field>-->
                       </v-col>
-                      </v-row>
-
 
                     <v-col sm="12" md="6">
                         <v-menu
@@ -131,6 +124,7 @@
                                     :prepend-icon="icons.mdiCalendar"
                                     v-bind="attrs"
                                     v-on="on"
+                                    color="#cf814d"
                                 ></v-text-field>
                             </template>
                             <v-date-picker
@@ -140,6 +134,7 @@
                             </v-date-picker>
                         </v-menu>
                     </v-col>
+                      </v-row>
 
                     <v-text-field
                        v-model="role"
@@ -150,6 +145,7 @@
                        :placeholder="$t('role')"
                        hide-details="auto"
                        class="mb-6"
+                       color="#cf814d"
                      ></v-text-field>
 
 <!--                    <v-checkbox-->
@@ -165,14 +161,14 @@
 <!--                      </template>-->
 <!--                    </v-checkbox>-->
 
-                    <v-btn block color="primary" type="submit" class="mt-6">{{$t('sign_up')}}</v-btn>
+                    <v-btn block color="#cf814d" type="submit" class="mt-6">{{$t('sign_up')}}</v-btn>
                   </v-form>
                 </v-card-text>
 
                 <!-- create new account  -->
                 <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
                   <p class="mb-0 me-2">{{$t('already_have_an_account')}}</p>
-                  <router-link :to="{ name: 'auth-login' }">{{$t('sign_in_instead')}}</router-link>
+                  <router-link style="color: #cf814d" :to="{ name: 'auth-login' }">{{$t('sign_in_instead')}}</router-link>
                 </v-card-text>
 
                 <!-- divider -->
@@ -333,4 +329,25 @@ export default {
 
 <style lang="scss" scoped>
 @import '@resources/sass/preset/pages/auth.scss';
+.auth-inner {
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.background-image-container {
+    background-image:url('../assets/images/Barbershop.png') !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    //z-index: -1; /* Ensure the background stays behind other elements */
+}
+
+.background-image-container img {
+    width: 100%;
+    height: 100%;
+}
 </style>

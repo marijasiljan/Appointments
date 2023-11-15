@@ -3,16 +3,41 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Price;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PriceController extends BaseController {
 
-    public function index(){
+    public function indexAdmin(){
 
-        $prices = Price::whereStatus(1)->get();
+        $prices = Price::with('service')->get();
 
         return $this->ResponseSuccess($prices);
+    }
+
+    public function index(){
+
+        $prices = Price::with('service')->whereStatus(1)->get();
+
+        return $this->ResponseSuccess($prices);
+    }
+
+    public function changeStatus(Request $request) {
+
+        $id = $request->input('id');
+        $newStatus = $request->input('status');
+
+        $price = Price::find($id);
+
+        if (!$price) {
+            return $this->ResponseError(0,'Price not found!', 404);
+        }
+
+        $price->status = $newStatus;
+        $price->save();
+
+        return $this->ResponseSuccess($price);
     }
 
     public function store(Request $request){

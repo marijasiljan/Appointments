@@ -1,10 +1,11 @@
 import {
   mdiHomeOutline,
-  mdiForumOutline,
-  mdiNewspaper,
+  mdiCalendarMonth ,
+  mdiAlarm,
   mdiAccountMultipleOutline,
-  mdiDomain,
+  mdiCalendarAccount,
   mdiAccountSwitch,
+  mdiAccountSettings, mdiAccountCash,
 } from '@mdi/js'
 let navigation = [
   {
@@ -20,58 +21,63 @@ let navigation = [
   {
     title: 'user_management',
     icon: mdiAccountMultipleOutline ,
-    action: 'view',
+    action: 'none',
     resource: 'user_management',
     children: [
       {
         title: 'clients',
+        action: 'view',
         to: 'admin-users-clients',
-        icon: mdiDomain,
+        icon: mdiAccountSwitch,
       },
       {
         title: 'employee',
         to: 'admin-users-employee',
-        icon: mdiDomain,
-        // action: 'view',
+        icon: mdiAccountSwitch,
+        action: 'view',
       }
     ],
   },
-
   {
     title: 'appointments',
-    icon: mdiAccountSwitch,
+    action:'view',
+    icon: mdiCalendarMonth,
     to: 'admin-appointments',
+  },
+  {
+    title: 'Availability',
+    icon: mdiCalendarAccount,
+    action: 'none',
     children:
         [
-         {
-      title: 'booking_times',
-      icon: mdiAccountSwitch,
-      to: 'admin-booking_times',
-    }
+          {
+            title: 'Availability',
+            icon: mdiCalendarAccount,
+            to: 'admin-availability-list',
+            action: 'view',
+          },
+          {
+            title: 'Availability Generator',
+            icon: mdiAlarm,
+            to: 'admin-availability',
+            action: 'view',
+          },
     ]
   },
   {
     title: 'services',
-    icon: mdiAccountSwitch,
+    action:'view',
+    icon: mdiAccountSettings,
     to: 'admin-services',
   },
   {
     subheader:'admin_settings'
   },
   {
-    title: 'affiliates',
-    to:'admin-affiliates',
-    // badge:true,
-    // badgeName:'chatsNr',
-    // badgeColor:'error',
-    icon: mdiForumOutline,
-    // action:'view',
-    // resource:'projects'
-  },
-  {
-    title: 'Prices',
-    to:'admin-prices',
-    icon: mdiNewspaper,
+    title: 'price',
+    to:'admin-price',
+    icon: mdiAccountCash,
+    action: 'view',
   },
 ];
 

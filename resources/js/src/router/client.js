@@ -1,7 +1,7 @@
 import multiguard from 'vue-router-multiguard';
 
 // import store from '../store/index.js';
-
+//
 // const auth = function(to, from, next) {
 //   if(store.state.settings.token == null){
 //     next();
