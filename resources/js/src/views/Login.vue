@@ -148,7 +148,7 @@
       width: 100%;
       height: 100%;
       background-size: cover;
-      //z-index: -1; /* Ensure the background stays behind other elements */ 
+      //z-index: -1; /* Ensure the background stays behind other elements */
   }
 
   .background-image-container img {

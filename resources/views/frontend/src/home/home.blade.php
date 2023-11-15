@@ -46,14 +46,7 @@
                 <!-- Inner -->
 
                 <!-- Controls -->
-                <a class="carousel-control-prev" href="#de-carousel" role="button" data-mdb-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#de-carousel" role="button" data-mdb-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
+
             </section>
 
             <section aria-label="section" class="no-top no-bottom">
