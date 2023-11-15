@@ -161,7 +161,7 @@ class AvailabilityController extends BaseController
                 return $this->ResponseError("No available slots found");
             }
         } else {
-            return $this->ResponseError(null, 'No available time slots for that employee.', 400);
+            return $this->ResponseError(null, 'No available time slots for that employee.', 200);
         }
     }
 
