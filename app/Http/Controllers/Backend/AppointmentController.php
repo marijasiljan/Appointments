@@ -52,6 +52,7 @@ class AppointmentController extends BaseController {
             'price' => 'required',
             'date' => 'required',
             'service_id' => 'required',
+            'status' => ''
         ]);
 
         if ($validator->fails()) {
@@ -70,7 +71,7 @@ class AppointmentController extends BaseController {
         $appointment->price = $request->input('price');
         $appointment->date = $request->input('date');
         $appointment->service_id = $request->input('service_id');
-        $appointment->status = 1;//$request->input('status');
+        $appointment->status = $request->input('status');
 
         $appointment->save();
 
