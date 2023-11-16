@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -50,7 +51,7 @@ class AppointmentController extends BaseController {
             'client_id' => 'required',
             'employee_id' => 'required',
             'price' => 'required',
-            'date' => 'required|date_format:DD/MM/YYYY',
+            'date' => 'required',
             'service_id' => 'required',
             'status' => ''
         ]);
@@ -69,7 +70,7 @@ class AppointmentController extends BaseController {
         $appointment->client_id = $request->input('client_id');
         $appointment->employee_id = $request->input('employee_id');
         $appointment->price = $request->input('price');
-        $appointment->date = $request->input('date');
+        $appointment->date = Carbon::parse($request->input('date'))->format('Y-m-d');
         $appointment->service_id = $request->input('service_id');
         $appointment->status = $request->input('status');
 
