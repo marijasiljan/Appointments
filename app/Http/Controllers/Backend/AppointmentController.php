@@ -50,7 +50,7 @@ class AppointmentController extends BaseController {
             'client_id' => 'required',
             'employee_id' => 'required',
             'price' => 'required',
-            'date' => 'required|date_format:d,m,Y',
+            'date' => 'required|date_format:DD/MM/YYYY',
             'service_id' => 'required',
             'status' => ''
         ]);
