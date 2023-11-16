@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/home', function () {
     return view('frontend.src.home.home');
 });
+Route::get('/', function () {
+    return view('frontend.src.home.home');
+});
 Route::get('/about', function () {
     return view('frontend.src.about.about');
 });

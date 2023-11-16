@@ -8,7 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.4/vue.js" integrity="sha512-LdhBTKne2GexKsxobRozOyU4IQDtrwPY0DR9p81jKXYg7g9yC8q2XSEe7GY9X2kcULCLntu6ZL49PI7xZ/0tfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{{--    <script src="https://cdn.jsdelivr.net/npm/calendarpickerjs@1.2.0"></script>--}}
+    <script src="/moment/moment.min.js"></script>
+
+
+    {{--    <script src="https://cdn.jsdelivr.net/npm/calendarpickerjs@1.2.0"></script>--}}
     <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -80,6 +83,7 @@
     </script>
 @endif
 @yield('footer')
+
 
 <script>
     let logUser = false;

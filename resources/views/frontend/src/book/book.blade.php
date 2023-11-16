@@ -135,8 +135,20 @@ data: {
     availability: [],
     appointmentData: [],
     employees: [],
+    m: moment(),
 },
 created() {
+
+    axios.get('https://appointment.mangosoft.mk/api/appointments')
+        .then(response => {
+            this.appointmentData = response.data;
+            console.log('appointment', response.data.data[0].client_id)
+            console.log('appointment', response.data.data)
+        })
+        .catch(error => {
+            console.error('Error fetching appointment data:', error);
+        })
+
     axios.get('https://appointment.mangosoft.mk/api/services')
         .then(response => {
             this.services = response.data.data;
@@ -154,17 +166,7 @@ created() {
         .catch(error => {
             console.error('Error fetching employees data:', error);
         });
-
-    axios.get('https://appointment.mangosoft.mk/api/appointments')
-        .then(response => {
-            this.appointmentData = response.data;
-            console.log('appointment', response.data.data[0].client_id)
-            console.log('appointment', response.data.data)
-        })
-        .catch(error => {
-            console.error('Error fetching appointment data:', error);
-        })
-    },
+ },
     mounted() {
         this.minDate = new Date().toISOString().split('T')[0];
 },
@@ -181,13 +183,15 @@ created() {
                 this.saveUser.price !== null &&
                 this.saveUser.selectedTime !== null
             ){
+                const formattedDate = moment(this.saveUser.date).format('DD/MM/YYYY');
+
                 axios.post('https://appointment.mangosoft.mk/api/appointments/store', {
                     client_id: JSON.parse(localStorage.getItem('user')).id,
                     employee_id: this.saveUser.employee,
                     price: this.saveUser.price,
                     start_time: this.saveUser.selectedTime.start_time,
                     end_time: this.saveUser.selectedTime.end_time,
-                    date: this.saveUser.date,
+                    date: formattedDate,
                     service_id: this.saveUser.service_id,
                 })
                 .then((response) => {

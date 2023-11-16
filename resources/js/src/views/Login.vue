@@ -87,19 +87,19 @@
             const email = ref('')
             const password = ref('')
 
+
             function login() {
                 axios.post("/login", {'email': email.value, 'password': password.value})
                     .then(response => {
                         console.log('res', response)
                         if (response.data.status == true) {
-
                             flashMsg('success', i18n.t('hold_on_we_are_logging_you_in'))
                             axios.defaults.headers.common['Authorization'] = response.data.data.token;
                             store.dispatch('updateToken', response.data.data.token);
                             store.dispatch('updateUser', response.data.data);
                             window.user = store.state.user
                             localStorage.setItem('user', JSON.stringify(response.data.data));
-                           window.location = '/home';
+                            window.location = '/home';
                         }
                     }).catch(error => {
                         console.log(error);
