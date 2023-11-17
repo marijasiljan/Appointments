@@ -99,7 +99,12 @@
                             store.dispatch('updateUser', response.data.data);
                             window.user = store.state.user
                             localStorage.setItem('user', JSON.stringify(response.data.data));
-                           window.location = '/home';
+                            if(user.role == 'admin'){
+                                window.location = '/admin';
+                            }else{
+                                window.location = '/home';
+                            }
+                           // window.location = '/home';
                         }
                     }).catch(error => {
                         console.log(error);

@@ -39,12 +39,13 @@ const auth = function (to, from, next) {
         }
     }
 };
-console.log('auth',store.state)
+
 router.beforeEach((to, from, next) => {
     store.dispatch('setFullLoader',true)
     if (!notAuthLoginRoutes.includes(to.name) && !auth()) {
         next({name: 'auth-login'})
     }else {
+        console.log(user);
         if(user != null && !notAuthRoutes.includes(to.name)){
             let pathArray = to.path.split('/')
             let navigationFunction = canNavigate

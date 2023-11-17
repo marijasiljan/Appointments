@@ -45,6 +45,10 @@ import StatisticsCardHorizontal from '@/@core/components/statistics-card/Statist
 import StatisticsCardWithImages from '@/@core/components/statistics-card/StatisticsCardWithImages.vue'
 import StatisticsCardProfitLineChart from '@/@core/components/statistics-card/StatisticsCardProfitLineChart.vue'
 
+import StatisticsCard from './StatisticsCard.vue'
+import AnalyticsStatisticsCard from './AnalyticsStatisticsCard.vue'
+import CrmWeeklySales from './CrmWeeklySales.vue'
+
 import VueApexCharts from 'vue-apexcharts'
 import apexChatData from 'apexcharts'
 import { mdiAccountOutline, mdiPoll } from '@mdi/js'
