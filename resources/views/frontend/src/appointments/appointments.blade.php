@@ -26,7 +26,7 @@
                                     <div class="col-lg-12">
                                         <div class="de-blog-c1">
                                             <div class="col-lg-12" data-jarallax-element="-20">
-                                                <p class="lead big wow fadeInUp">@{{'Date: ' +  appointment.date}}</p>
+                                                <p class="lead big wow fadeInUp">@{{ 'Date: ' }} @{{ formatAppointmentDate(appointment.date) }}</p>
                                                 <p class="lead big wow fadeInUp">@{{'Time: ' + appointment.start_time + ' - ' + appointment.end_time}}</p>
                                                 <p class="lead big wow fadeInUp">@{{'Employee: ' + appointment.employee.name + ' ' + appointment.employee.surname}}</p>
                                                 <p class="lead big wow fadeInUp">@{{'Service: ' + appointment.service.name}}</p>
@@ -53,6 +53,11 @@
             el: '#appointment',
             data: {
                 appointments: '',
+            },
+            methods: {
+                formatAppointmentDate(date) {
+                    return moment(date).format('DD/MM/YYYY');
+                },
             },
             created() {
                 axios.get('https://appointment.mangosoft.mk/api/appointments')

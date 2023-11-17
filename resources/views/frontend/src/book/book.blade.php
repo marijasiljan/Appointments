@@ -66,10 +66,10 @@
                                 <div class="col-lg-6">
                                     <div v-if="saveUser.employee">
                                     <h3 class="s2">Select Date</h3>
-                                    <input type="date" name="date" id="date" class="form-control" :min="minDate" v-model="saveUser.date" required @change="getAvailability" />
+                                    <input type="date" name="date" id="date" class="form-control" :min="minDate" v-model="saveUser.formattedDate" required @change="getAvailability" />
                                     </div>
                                     <div class="spacer-single"></div>
-                                    <div v-if="saveUser.date && saveUser.employee">
+                                    <div v-if="saveUser.formattedDate && saveUser.employee">
                                     <h3 class="s2">Select Time</h3>
                                     <div class="custom_radio">
                                         <div class="radio-opt" v-for="(slot, index) in availability" :key="index">
@@ -127,7 +127,7 @@ data: {
         clientId: null,
         employee: null,
         price: null,
-        date: null,
+        formattedDate: null,
         service_id: null,
     },
     minDate: '',
@@ -135,7 +135,7 @@ data: {
     availability: [],
     appointmentData: [],
     employees: [],
-    m: moment(),
+    m: '',
 },
 created() {
 
@@ -169,6 +169,10 @@ created() {
  },
     mounted() {
         this.minDate = new Date().toISOString().split('T')[0];
+        this.m = moment();
+        console.log('m', this.m);
+        this.saveUser.formattedDate = this.m.format('DD/MM/YYYY');
+        console.log('formatdate', this.saveUser.formattedDate);
 },
     methods: {
         appointmentSave() {
@@ -178,12 +182,11 @@ created() {
                 window.location.href = '/login';
             }   else if (
                 this.saveUser.client_id !== null &&
-                this.saveUser.date !== null &&
+                this.saveUser.formattedDate !== null &&
                 this.saveUser.employee !== null &&
                 this.saveUser.price !== null &&
                 this.saveUser.selectedTime !== null
             ){
-                const formattedDate = moment(this.saveUser.date).format('DD/MM/YYYY');
 
                 axios.post('https://appointment.mangosoft.mk/api/appointments/store', {
                     client_id: JSON.parse(localStorage.getItem('user')).id,
@@ -191,7 +194,7 @@ created() {
                     price: this.saveUser.price,
                     start_time: this.saveUser.selectedTime.start_time,
                     end_time: this.saveUser.selectedTime.end_time,
-                    date: formattedDate,
+                    date: this.saveUser.formattedDate,
                     service_id: this.saveUser.service_id,
                 })
                 .then((response) => {
@@ -216,7 +219,7 @@ created() {
 
         getAvailability() {
             axios.post('https://appointment.mangosoft.mk/api/availability/slots', {
-                date: this.saveUser.date,
+                date: this.saveUser.formattedDate,
                 employee_id: this.saveUser.employee,
             })
                 .then(response => {
