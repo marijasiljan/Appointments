@@ -72,7 +72,7 @@ class AppointmentController extends BaseController {
         $appointment->price = $request->input('price');
         $appointment->date = date('Y-m-d', strtotime(request('date')));//Carbon::parse($request->input('date'))->format('Y-m-d');
         $appointment->service_id = $request->input('service_id');
-        $appointment->status = $request->input('status');
+        $appointment->status = $request->input('status') ?? 1;
 
         $appointment->save();
 
